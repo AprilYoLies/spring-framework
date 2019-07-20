@@ -62,7 +62,7 @@ configure(allprojects) { project ->
 
 	apply plugin: "java"
 	apply plugin: "kotlin"
-	apply plugin: "checkstyle"checks
+//	apply plugin: "checkstyle"
 	apply plugin: "propdeps"
 	apply plugin: "test-source-set-dependencies"
 	apply plugin: "io.spring.dependency-management"
@@ -148,10 +148,10 @@ configure(allprojects) { project ->
 		reports.junitXml.setDestination(file("$buildDir/test-results"))
 	}
 
-	checkstyle {
-		toolVersion = "8.22"
-		configDir = rootProject.file("src/checkstyle")
-	}
+//	checkstyle {
+//		toolVersion = "8.22"
+//		configDir = rootProject.file("src/checkstyle")
+//	}
 
 	repositories {
 		mavenCentral()
@@ -180,7 +180,7 @@ configure(allprojects) { project ->
 		// JSR-305 only used for non-required meta-annotations
 		compileOnly("com.google.code.findbugs:jsr305:3.0.2")
 		testCompileOnly("com.google.code.findbugs:jsr305:3.0.2")
-		checkstyle("io.spring.javaformat:spring-javaformat-checkstyle:0.0.7")
+//		checkstyle("io.spring.javaformat:spring-javaformat-checkstyle:0.0.7")
 	}
 
 	ext.javadocLinks = [
@@ -262,20 +262,20 @@ configure(rootProject) {
 	description = "Spring Framework"
 
 	apply plugin: "groovy"
-	apply plugin: "io.spring.nohttp"
+//	apply plugin: "io.spring.nohttp"
 	apply from: "${gradleScriptDir}/jdiff.gradle"
 	apply from: "${gradleScriptDir}/docs.gradle"
 
-	nohttp {
-		source.exclude "**/test-output/**"
-		whitelistFile = project.file("src/nohttp/whitelist.lines")
-		def projectDirURI = project.projectDir.toURI()
-		allprojects.forEach { p ->
-			def outURI = p.file("out").toURI()
-			def pattern = projectDirURI.relativize(outURI).path + "**"
-			source.exclude pattern
-		}
-	}
+//	nohttp {
+//		source.exclude "**/test-output/**"
+//		whitelistFile = project.file("src/nohttp/whitelist.lines")
+//		def projectDirURI = project.projectDir.toURI()
+//		allprojects.forEach { p ->
+//			def outURI = p.file("out").toURI()
+//			def pattern = projectDirURI.relativize(outURI).path + "**"
+//			source.exclude pattern
+//		}
+//	}
 
 	dependencyManagement {
 		imports {
