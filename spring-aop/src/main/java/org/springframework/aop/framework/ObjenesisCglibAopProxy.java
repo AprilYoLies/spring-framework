@@ -52,13 +52,13 @@ class ObjenesisCglibAopProxy extends CglibAopProxy {
 	}
 
 
-	@Override
+	@Override	// 根据 enhancer 构建代理类 class，然后通过 class 构建代理类实例，最后将 callbacks 设置到其中
 	protected Object createProxyClassAndInstance(Enhancer enhancer, Callback[] callbacks) {
 		Class<?> proxyClass = enhancer.createClass();
 		Object proxyInstance = null;
 
 		if (objenesis.isWorthTrying()) {
-			try {
+			try {	// 根据代理 class 构建出对应的实例
 				proxyInstance = objenesis.newInstance(proxyClass, enhancer.getUseCache());
 			}
 			catch (Throwable ex) {
@@ -80,9 +80,9 @@ class ObjenesisCglibAopProxy extends CglibAopProxy {
 			catch (Throwable ex) {
 				throw new AopConfigException("Unable to instantiate proxy using Objenesis, " +
 						"and regular proxy instantiation via default constructor fails as well", ex);
-			}
+			}	// org.springframework.aop.framework.ProxyFactory: 0 interfaces []; 4 advisors [org.springframework.aop.interceptor.ExposeInvocationInterceptor.ADVISOR, InstantiationModelAwarePointcutAdvisor: expression [test()]; advice method [public void top.aprilyolies.example.aop.AspectJBean.afterTest()]; perClauseKind=SINGLETON, InstantiationModelAwarePointcutAdvisor: expression [test()]; advice method [public java.lang.Object top.aprilyolies.example.aop.AspectJBean.aroundTest(org.aspectj.lang.ProceedingJoinPoint)]; perClauseKind=SINGLETON, InstantiationModelAwarePointcutAdvisor: expression [test()]; advice method [public void top.aprilyolies.example.aop.AspectJBean.beforeTest()]; perClauseKind=SINGLETON];
 		}
-
+		// 这里就是设置回调函数
 		((Factory) proxyInstance).setCallbacks(callbacks);
 		return proxyInstance;
 	}

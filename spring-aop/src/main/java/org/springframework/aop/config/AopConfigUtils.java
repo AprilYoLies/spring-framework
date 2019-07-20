@@ -93,10 +93,10 @@ public abstract class AopConfigUtils {
 		return registerAspectJAnnotationAutoProxyCreatorIfNecessary(registry, null);
 	}
 
-	@Nullable
+	@Nullable	// 尝试向 DefaultListableBeanFactory 中注册 AnnotationAwareAspectJAutoProxyCreator 对应的 bean，如果已存在，则注册优先级较高的那个
 	public static BeanDefinition registerAspectJAnnotationAutoProxyCreatorIfNecessary(
 			BeanDefinitionRegistry registry, @Nullable Object source) {
-
+		// 尝试向 DefaultListableBeanFactory 中注册 AnnotationAwareAspectJAutoProxyCreator 对应的 bean，如果已存在，则注册优先级较高的那个
 		return registerOrEscalateApcAsRequired(AnnotationAwareAspectJAutoProxyCreator.class, registry, source);
 	}
 
@@ -114,13 +114,13 @@ public abstract class AopConfigUtils {
 		}
 	}
 
-	@Nullable
+	@Nullable	// 尝试向 DefaultListableBeanFactory 中注册 cls 对应的 bean，如果已存在，则注册优先级较高的那个
 	private static BeanDefinition registerOrEscalateApcAsRequired(
 			Class<?> cls, BeanDefinitionRegistry registry, @Nullable Object source) {
 
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
 
-		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
+		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {	// 这里是指已存在对应的 bean，那么就看谁的优先级高
 			BeanDefinition apcDefinition = registry.getBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME);
 			if (!cls.getName().equals(apcDefinition.getBeanClassName())) {
 				int currentPriority = findPriorityForClass(apcDefinition.getBeanClassName());
@@ -135,7 +135,7 @@ public abstract class AopConfigUtils {
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(cls);
 		beanDefinition.setSource(source);
 		beanDefinition.getPropertyValues().add("order", Ordered.HIGHEST_PRECEDENCE);
-		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);	// 指明该 bean 在 spring 容器中的身份
 		registry.registerBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME, beanDefinition);
 		return beanDefinition;
 	}

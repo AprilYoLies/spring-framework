@@ -70,16 +70,16 @@ public abstract class AopNamespaceUtils {
 		useClassProxyingIfNecessary(parserContext.getRegistry(), sourceElement);
 		registerComponentIfNecessary(beanDefinition, parserContext);
 	}
-
+	// 主要就是注册了一个 AnnotationAwareAspectJAutoProxyCreator，并对 <aop:aspectj-autoproxy/> 标签的 proxy-target-class 和 expose-proxy 属性的处理
 	public static void registerAspectJAnnotationAutoProxyCreatorIfNecessary(
 			ParserContext parserContext, Element sourceElement) {
-
+		// 尝试向 DefaultListableBeanFactory 中注册 AnnotationAwareAspectJAutoProxyCreator 对应的 bean，如果已存在，则注册优先级较高的那个
 		BeanDefinition beanDefinition = AopConfigUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(
 				parserContext.getRegistry(), parserContext.extractSource(sourceElement));
-		useClassProxyingIfNecessary(parserContext.getRegistry(), sourceElement);
-		registerComponentIfNecessary(beanDefinition, parserContext);
+		useClassProxyingIfNecessary(parserContext.getRegistry(), sourceElement);	// 对于 <aop:aspectj-autoproxy/> 标签 proxy-target-class 和 expose-proxy 属性的处理
+		registerComponentIfNecessary(beanDefinition, parserContext);	// 核心就是注册 AnnotationAwareAspectJAutoProxyCreator 对应的 beanDefinition（封装为 BeanComponentDefinition）
 	}
-
+	// 对于 <aop:aspectj-autoproxy/> 标签 proxy-target-class 和 expose-proxy 属性的处理
 	private static void useClassProxyingIfNecessary(BeanDefinitionRegistry registry, @Nullable Element sourceElement) {
 		if (sourceElement != null) {
 			boolean proxyTargetClass = Boolean.parseBoolean(sourceElement.getAttribute(PROXY_TARGET_CLASS_ATTRIBUTE));
@@ -92,7 +92,7 @@ public abstract class AopNamespaceUtils {
 			}
 		}
 	}
-
+	// 核心就是注册 AnnotationAwareAspectJAutoProxyCreator 对应的 beanDefinition（封装为 BeanComponentDefinition）
 	private static void registerComponentIfNecessary(@Nullable BeanDefinition beanDefinition, ParserContext parserContext) {
 		if (beanDefinition != null) {
 			parserContext.registerComponent(

@@ -57,7 +57,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 	}
 
 
-	@Override
+	@Override	// 获取 RootBeanDefinition 对应的构造函数，然后构建 bean
 	public Object instantiate(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner) {
 		// Don't override the class with CGLIB if no overrides.
 		if (!bd.hasMethodOverrides()) {
@@ -83,7 +83,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 						throw new BeanInstantiationException(clazz, "No default constructor found", ex);
 					}
 				}
-			}
+			}	// 通过构造函数构建 bean
 			return BeanUtils.instantiateClass(constructorToUse);
 		}
 		else {

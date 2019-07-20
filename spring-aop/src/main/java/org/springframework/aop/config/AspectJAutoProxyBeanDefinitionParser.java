@@ -35,17 +35,17 @@ import org.springframework.lang.Nullable;
  * @author Rob Harrop
  * @author Juergen Hoeller
  * @since 2.0
- */
+ */	// 核心就是注册了一个 AnnotationAwareAspectJAutoProxyCreator
 class AspectJAutoProxyBeanDefinitionParser implements BeanDefinitionParser {
 
 	@Override
 	@Nullable
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
-		AopNamespaceUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(parserContext, element);
+		AopNamespaceUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(parserContext, element);	// 主要就是注册了一个 AnnotationAwareAspectJAutoProxyCreator，并对 <aop:aspectj-autoproxy/> 标签的 proxy-target-class 和 expose-proxy 属性的处理
 		extendBeanDefinition(element, parserContext);
 		return null;
 	}
-
+	// 针对 <aop:aspectj-autoproxy/> 标签有子元素的处理，暂时不了解
 	private void extendBeanDefinition(Element element, ParserContext parserContext) {
 		BeanDefinition beanDef =
 				parserContext.getRegistry().getBeanDefinition(AopConfigUtils.AUTO_PROXY_CREATOR_BEAN_NAME);

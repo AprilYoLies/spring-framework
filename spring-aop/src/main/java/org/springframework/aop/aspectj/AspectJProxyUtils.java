@@ -41,7 +41,7 @@ public abstract class AspectJProxyUtils {
 	 * @param advisors the advisors available
 	 * @return {@code true} if an {@link ExposeInvocationInterceptor} was added to the list,
 	 * otherwise {@code false}
-	 */
+	 */	// 看 advisors 是否有切面增强器，有的话就在首位添加一个 DefaultPointcutAdvisor（ExposeInvocationInterceptor.ADVISOR）
 	public static boolean makeAdvisorChainAspectJCapableIfNecessary(List<Advisor> advisors) {
 		// Don't add advisors to an empty list; may indicate that proxying is just not required
 		if (!advisors.isEmpty()) {
@@ -49,11 +49,11 @@ public abstract class AspectJProxyUtils {
 			for (Advisor advisor : advisors) {
 				// Be careful not to get the Advice without a guard, as this might eagerly
 				// instantiate a non-singleton AspectJ aspect...
-				if (isAspectJAdvice(advisor)) {
+				if (isAspectJAdvice(advisor)) {	// 看是否是切面增强器
 					foundAspectJAdvice = true;
 					break;
 				}
-			}
+			}	// (ExposeInvocationInterceptor.ADVISOR 是放在首位的
 			if (foundAspectJAdvice && !advisors.contains(ExposeInvocationInterceptor.ADVISOR)) {
 				advisors.add(0, ExposeInvocationInterceptor.ADVISOR);
 				return true;

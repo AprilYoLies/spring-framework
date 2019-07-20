@@ -67,7 +67,7 @@ public final class ParserContext {
 	public final XmlReaderContext getReaderContext() {
 		return this.readerContext;
 	}
-
+	// 获取 DefaultListableBeanFactory
 	public final BeanDefinitionRegistry getRegistry() {
 		return this.readerContext.getRegistry();
 	}

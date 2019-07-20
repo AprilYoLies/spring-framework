@@ -108,7 +108,7 @@ public class ProxyFactory extends ProxyCreatorSupport {
 	 */
 	public Object getProxy(@Nullable ClassLoader classLoader) {
 		return createAopProxy().getProxy(classLoader);
-	}
+	}	// 验证代理工厂长持有的目标类，然后构建 enhancer，根据 enhancer 构建代理类 class，然后通过 class 构建代理类实例，最后将 callbacks 设置到其中
 
 
 	/**

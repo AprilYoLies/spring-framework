@@ -220,10 +220,10 @@ public abstract class AopUtils {
 	 * @param hasIntroductions whether or not the advisor chain
 	 * for this bean includes any introductions
 	 * @return whether the pointcut can apply on any method
-	 */
+	 */	// 通过引介方法匹配器来确定当前 advisor 是否能应用到 target class 上
 	public static boolean canApply(Pointcut pc, Class<?> targetClass, boolean hasIntroductions) {
 		Assert.notNull(pc, "Pointcut must not be null");
-		if (!pc.getClassFilter().matches(targetClass)) {
+		if (!pc.getClassFilter().matches(targetClass)) {	// 看 targetClass 是否满足切点表达式的规则（类型过滤）
 			return false;
 		}
 
@@ -234,15 +234,15 @@ public abstract class AopUtils {
 		}
 
 		IntroductionAwareMethodMatcher introductionAwareMethodMatcher = null;
-		if (methodMatcher instanceof IntroductionAwareMethodMatcher) {
+		if (methodMatcher instanceof IntroductionAwareMethodMatcher) {	// 是引介方法匹配器的处理
 			introductionAwareMethodMatcher = (IntroductionAwareMethodMatcher) methodMatcher;
 		}
 
 		Set<Class<?>> classes = new LinkedHashSet<>();
-		if (!Proxy.isProxyClass(targetClass)) {
-			classes.add(ClassUtils.getUserClass(targetClass));
+		if (!Proxy.isProxyClass(targetClass)) {	// 不是 jdk 代理类
+			classes.add(ClassUtils.getUserClass(targetClass));	// 处理可能的 cglib 代理类
 		}
-		classes.addAll(ClassUtils.getAllInterfacesForClassAsSet(targetClass));
+		classes.addAll(ClassUtils.getAllInterfacesForClassAsSet(targetClass));	// 将目标类的所有接口添加进去
 
 		for (Class<?> clazz : classes) {
 			Method[] methods = ReflectionUtils.getAllDeclaredMethods(clazz);
@@ -279,14 +279,14 @@ public abstract class AopUtils {
 	 * @param hasIntroductions whether or not the advisor chain for this bean includes
 	 * any introductions
 	 * @return whether the pointcut can apply on any method
-	 */
+	 */	// 判断 advisor 是否能应用到 targetClass，IntroductionAdvisor 通过 classFilter 过滤，PointcutAdvisor 通过切点来匹配（通过引介方法匹配器来确定当前 advisor 是否能应用到 target class 上）
 	public static boolean canApply(Advisor advisor, Class<?> targetClass, boolean hasIntroductions) {
 		if (advisor instanceof IntroductionAdvisor) {
 			return ((IntroductionAdvisor) advisor).getClassFilter().matches(targetClass);
 		}
-		else if (advisor instanceof PointcutAdvisor) {
+		else if (advisor instanceof PointcutAdvisor) {	// 是切点增强器
 			PointcutAdvisor pca = (PointcutAdvisor) advisor;
-			return canApply(pca.getPointcut(), targetClass, hasIntroductions);
+			return canApply(pca.getPointcut(), targetClass, hasIntroductions);	// 通过引介方法匹配器来确定当前 advisor 是否能应用到 target class 上
 		}
 		else {
 			// It doesn't have a pointcut so we assume it applies.
@@ -301,23 +301,23 @@ public abstract class AopUtils {
 	 * @param clazz the target class
 	 * @return sublist of Advisors that can apply to an object of the given class
 	 * (may be the incoming List as-is)
-	 */
+	 */	// 判断 advisor 是否能应用到 targetClass，IntroductionAdvisor 通过 classFilter 过滤，PointcutAdvisor 通过切点来匹配（通过引介方法匹配器来确定当前 advisor 是否能应用到 target class 上）
 	public static List<Advisor> findAdvisorsThatCanApply(List<Advisor> candidateAdvisors, Class<?> clazz) {
 		if (candidateAdvisors.isEmpty()) {
 			return candidateAdvisors;
 		}
 		List<Advisor> eligibleAdvisors = new ArrayList<>();
-		for (Advisor candidate : candidateAdvisors) {
+		for (Advisor candidate : candidateAdvisors) {	// 这里只是为了找到可用的引介增强器
 			if (candidate instanceof IntroductionAdvisor && canApply(candidate, clazz)) {
 				eligibleAdvisors.add(candidate);
 			}
 		}
-		boolean hasIntroductions = !eligibleAdvisors.isEmpty();
+		boolean hasIntroductions = !eligibleAdvisors.isEmpty();	// 这里是看是否有引介增强器
 		for (Advisor candidate : candidateAdvisors) {
-			if (candidate instanceof IntroductionAdvisor) {
+			if (candidate instanceof IntroductionAdvisor) {	// 跳过引介增强器
 				// already processed
 				continue;
-			}
+			}	// 判断 advisor 是否能应用到 targetClass，IntroductionAdvisor 通过 classFilter 过滤，PointcutAdvisor 通过切点来匹配（通过引介方法匹配器来确定当前 advisor 是否能应用到 target class 上）
 			if (canApply(candidate, clazz, hasIntroductions)) {
 				eligibleAdvisors.add(candidate);
 			}

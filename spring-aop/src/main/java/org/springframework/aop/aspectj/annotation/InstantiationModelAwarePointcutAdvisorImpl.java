@@ -119,7 +119,7 @@ final class InstantiationModelAwarePointcutAdvisorImpl
 	 * The pointcut for Spring AOP to use.
 	 * Actual behaviour of the pointcut will change depending on the state of the advice.
 	 */
-	@Override
+	@Override	// 获取切点信息
 	public Pointcut getPointcut() {
 		return this.pointcut;
 	}

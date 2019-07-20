@@ -1,17 +1,21 @@
 package top.aprilyolies.example.aop;
 
 public class TestBean {
-    private String str;
+	public TestBean() {
+		System.out.println("TestBean constructor");
+	}
 
-    public String getStr() {
-        return str;
-    }
+	private String str;
 
-    public void setStr(String str) {
-        this.str = str;
-    }
+	public String getStr() {
+		return str;
+	}
 
-    public void test() {
-        System.out.println("test method....");
-    }
+	public void setStr(String str) {
+		this.str = str;
+	}
+
+	public void test() {
+		System.out.println("test method....");
+	}
 }

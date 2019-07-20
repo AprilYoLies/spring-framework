@@ -140,7 +140,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 		}
 		List<Advisor> advisors = new ArrayList<>();
 		for (String aspectName : aspectNames) {
-			List<Advisor> cachedAdvisors = this.advisorsCache.get(aspectName);
+			List<Advisor> cachedAdvisors = this.advisorsCache.get(aspectName);	// 对于测试程序而言，AspectJBean 就是 advisor，@Before 等就是切点增强器
 			if (cachedAdvisors != null) {
 				advisors.addAll(cachedAdvisors);
 			}

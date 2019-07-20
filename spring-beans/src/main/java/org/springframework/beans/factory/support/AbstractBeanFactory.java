@@ -196,7 +196,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 	@Override
 	public Object getBean(String name) throws BeansException {
-		return doGetBean(name, null, null, false);
+		return doGetBean(name, null, null, false);	// 从容器中获取 bean，如果缓存中有就从缓存中获取，没有的话尝试进行构建，最后还会对获取类型进行比较
 	}
 
 	@Override
@@ -235,7 +235,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @return an instance of the bean
 	 * @throws BeansException if the bean could not be created
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")	// 从容器中获取 bean，如果缓存中有就从缓存中获取，没有的话尝试进行构建，最后还会对获取类型进行比较
 	protected <T> T doGetBean(final String name, @Nullable final Class<T> requiredType,
 			@Nullable final Object[] args, boolean typeCheckOnly) throws BeansException {
 
@@ -243,7 +243,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		Object bean;
 
 		// Eagerly check singleton cache for manually registered singletons.
-		Object sharedInstance = getSingleton(beanName);
+		Object sharedInstance = getSingleton(beanName);	// 优先从 singletonObjects，没有的话再从 earlySingletonObjects，如果还是没有，就从 singletonFactories 获取
 		if (sharedInstance != null && args == null) {
 			if (logger.isTraceEnabled()) {
 				if (isSingletonCurrentlyInCreation(beanName)) {
@@ -376,7 +376,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		}
 
 		// Check if required type matches the type of the actual bean instance.
-		if (requiredType != null && !requiredType.isInstance(bean)) {
+		if (requiredType != null && !requiredType.isInstance(bean)) {	// 如果 bean 不是指定的类型的处理
 			try {
 				T convertedBean = getTypeConverter().convertIfNecessary(bean, requiredType);
 				if (convertedBean == null) {
@@ -1153,10 +1153,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * <p>The default implementation delegates to {@link #registerCustomEditors}.
 	 * Can be overridden in subclasses.
 	 * @param bw the BeanWrapper to initialize
-	 */
+	 */	// 为 BeanWrapper 设置 ConversionService，为 BeanWrapper 注册属性编辑器
 	protected void initBeanWrapper(BeanWrapper bw) {
 		bw.setConversionService(getConversionService());
-		registerCustomEditors(bw);
+		registerCustomEditors(bw);	// 为 registry 注册属性编辑器
 	}
 
 	/**
@@ -1166,7 +1166,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * instances, and for SimpleTypeConverter used for constructor argument
 	 * and factory method type conversion.
 	 * @param registry the PropertyEditorRegistry to initialize
-	 */
+	 */	// 为 registry 注册属性编辑器
 	protected void registerCustomEditors(PropertyEditorRegistry registry) {
 		PropertyEditorRegistrySupport registrySupport =
 				(registry instanceof PropertyEditorRegistrySupport ? (PropertyEditorRegistrySupport) registry : null);
@@ -1176,7 +1176,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		if (!this.propertyEditorRegistrars.isEmpty()) {
 			for (PropertyEditorRegistrar registrar : this.propertyEditorRegistrars) {
 				try {
-					registrar.registerCustomEditors(registry);
+					registrar.registerCustomEditors(registry);	// 注册属性编辑器 PropertyEditor，比如和资源相关的属性编辑器
 				}
 				catch (BeanCreationException ex) {
 					Throwable rootCause = ex.getMostSpecificCause();
@@ -1656,7 +1656,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		// If it's a FactoryBean, we use it to create a bean instance, unless the
 		// caller actually wants a reference to the factory.
 		if (!(beanInstance instanceof FactoryBean) || BeanFactoryUtils.isFactoryDereference(name)) {
-			return beanInstance;
+			return beanInstance;	// 不是工厂 bean 直接返回
 		}
 
 		Object object = null;

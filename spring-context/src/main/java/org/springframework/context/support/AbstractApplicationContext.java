@@ -1101,8 +1101,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 	@Override
 	public Object getBean(String name) throws BeansException {
-		assertBeanFactoryActive();
-		return getBeanFactory().getBean(name);
+		assertBeanFactoryActive();	// 空实现
+		return getBeanFactory().getBean(name);	// 从容器中获取 bean，如果缓存中有就从缓存中获取，没有的话尝试进行构建，最后还会对获取类型进行比较
 	}
 
 	@Override

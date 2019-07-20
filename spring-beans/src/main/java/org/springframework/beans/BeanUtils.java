@@ -176,7 +176,7 @@ public abstract class BeanUtils {
 	 * @return the new instance
 	 * @throws BeanInstantiationException if the bean cannot be instantiated
 	 * @see Constructor#newInstance
-	 */
+	 */	// 核心就是根据构造函数构建 bean
 	public static <T> T instantiateClass(Constructor<T> ctor, Object... args) throws BeanInstantiationException {
 		Assert.notNull(ctor, "Constructor must not be null");
 		try {
@@ -196,7 +196,7 @@ public abstract class BeanUtils {
 					else {
 						argsWithDefaultValues[i] = args[i];
 					}
-				}
+				}	// 通过构造函数构建 bean
 				return ctor.newInstance(argsWithDefaultValues);
 			}
 		}

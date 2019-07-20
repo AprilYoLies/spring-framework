@@ -81,7 +81,7 @@ public class XmlReaderContext extends ReaderContext {
 	 * @see XmlBeanDefinitionReader#XmlBeanDefinitionReader(BeanDefinitionRegistry)
 	 */
 	public final BeanDefinitionRegistry getRegistry() {
-		return this.reader.getRegistry();
+		return this.reader.getRegistry();	// 获取 DefaultListableBeanFactory
 	}
 
 	/**

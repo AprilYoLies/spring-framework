@@ -427,7 +427,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		Object result = existingBean;
 		for (BeanPostProcessor processor : getBeanPostProcessors()) {
-			Object current = processor.postProcessAfterInitialization(result, beanName);
+			Object current = processor.postProcessAfterInitialization(result, beanName);	// 尝试从缓存中获取代理 bean，没有的话进行构建，核心就是构建 enhancer，根据 enhancer 构建代理类 class，然后通过 class 构建代理类实例，最后将 callbacks 设置到其中
 			if (current == null) {
 				return result;
 			}
@@ -543,7 +543,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @see #instantiateBean
 	 * @see #instantiateUsingFactoryMethod
 	 * @see #autowireConstructor
-	 */
+	 */	// 创建 bean，进行缓存，完成属性填充
 	protected Object doCreateBean(final String beanName, final RootBeanDefinition mbd, final @Nullable Object[] args)
 			throws BeanCreationException {
 
@@ -552,7 +552,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		if (mbd.isSingleton()) {
 			instanceWrapper = this.factoryBeanInstanceCache.remove(beanName);
 		}
-		if (instanceWrapper == null) {
+		if (instanceWrapper == null) { // 检查 RootBeanDefinition 对应的 bean class 的修饰符，要是 public 的，再 通过 RootBeanDefinition 构建 bean 实例，封装为 BeanWrapper，为 BeanWrapper 设置 ConversionService，为 BeanWrapper 注册属性编辑器
 			instanceWrapper = createBeanInstance(beanName, mbd, args);
 		}
 		final Object bean = instanceWrapper.getWrappedInstance();
@@ -564,14 +564,14 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Allow post-processors to modify the merged bean definition.
 		synchronized (mbd.postProcessingLock) {
 			if (!mbd.postProcessed) {
-				try {
+				try {	// 调用实现  MergedBeanDefinitionPostProcessor 接口的 bean 的 postProcessMergedBeanDefinition 方法
 					applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
 				}
 				catch (Throwable ex) {
 					throw new BeanCreationException(mbd.getResourceDescription(), beanName,
 							"Post-processing of merged bean definition failed", ex);
 				}
-				mbd.postProcessed = true;
+				mbd.postProcessed = true;	// 设置被处理的标志
 			}
 		}
 
@@ -583,7 +583,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			if (logger.isTraceEnabled()) {
 				logger.trace("Eagerly caching bean '" + beanName +
 						"' to allow for resolving potential circular references");
-			}
+			}	// 将 beanName 缓存到 singletonFactories 和 registeredSingletons，从 earlySingletonObjects 移除
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
 
@@ -943,7 +943,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @param mbd the merged bean definition for the bean
 	 * @param bean the raw bean instance
 	 * @return the object to expose as bean reference
-	 */
+	 */	// 获取早期的 bean reference，也就是还未构建完成的 bean 吧
 	protected Object getEarlyBeanReference(String beanName, RootBeanDefinition mbd, Object bean) {
 		Object exposedObject = bean;
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
@@ -1074,7 +1074,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @param beanType the actual type of the managed bean instance
 	 * @param beanName the name of the bean
 	 * @see MergedBeanDefinitionPostProcessor#postProcessMergedBeanDefinition
-	 */
+	 */	// 调用实现  MergedBeanDefinitionPostProcessor 接口的 bean 的 postProcessMergedBeanDefinition 方法
 	protected void applyMergedBeanDefinitionPostProcessors(RootBeanDefinition mbd, Class<?> beanType, String beanName) {
 		for (BeanPostProcessor bp : getBeanPostProcessors()) {
 			if (bp instanceof MergedBeanDefinitionPostProcessor) {
@@ -1146,7 +1146,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @see #instantiateUsingFactoryMethod
 	 * @see #autowireConstructor
 	 * @see #instantiateBean
-	 */
+	 */	// 检查 RootBeanDefinition 对应的 bean class 的修饰符，要是 public 的，再 通过 RootBeanDefinition 构建 bean 实例，封装为 BeanWrapper，为 BeanWrapper 设置 ConversionService，为 BeanWrapper 注册属性编辑器
 	protected BeanWrapper createBeanInstance(String beanName, RootBeanDefinition mbd, @Nullable Object[] args) {
 		// Make sure bean class is actually resolved at this point.
 		Class<?> beanClass = resolveBeanClass(mbd, beanName);
@@ -1199,7 +1199,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		// No special handling: simply use no-arg constructor.
-		return instantiateBean(beanName, mbd);
+		return instantiateBean(beanName, mbd);	// 通过 RootBeanDefinition 构建 bean 实例，封装为 BeanWrapper，为 BeanWrapper 设置 ConversionService，为 BeanWrapper 注册属性编辑器
 	}
 
 	/**
@@ -1286,7 +1286,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @param beanName the name of the bean
 	 * @param mbd the bean definition for the bean
 	 * @return a BeanWrapper for the new instance
-	 */
+	 */	// 通过 RootBeanDefinition 构建 bean 实例，封装为 BeanWrapper，为 BeanWrapper 设置 ConversionService，为 BeanWrapper 注册属性编辑器
 	protected BeanWrapper instantiateBean(final String beanName, final RootBeanDefinition mbd) {
 		try {
 			Object beanInstance;
@@ -1296,11 +1296,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 						getInstantiationStrategy().instantiate(mbd, beanName, parent),
 						getAccessControlContext());
 			}
-			else {
+			else {	// 获取 RootBeanDefinition 对应的构造函数，然后构建 bean
 				beanInstance = getInstantiationStrategy().instantiate(mbd, beanName, parent);
 			}
-			BeanWrapper bw = new BeanWrapperImpl(beanInstance);
-			initBeanWrapper(bw);
+			BeanWrapper bw = new BeanWrapperImpl(beanInstance);	// 用 BeanWrapperImpl 封装构建的 bean
+			initBeanWrapper(bw);	// 为 BeanWrapper 设置 ConversionService，为 BeanWrapper 注册属性编辑器
 			return bw;
 		}
 		catch (Throwable ex) {
@@ -1370,7 +1370,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// state of the bean before properties are set. This can be used, for example,
 		// to support styles of field injection.
 		boolean continueWithPropertyPopulation = true;
-
+		// 通过 InstantiationAwareBeanPostProcessor 的实现类对构建的 bean 进行处理，比如和 aop 相关的 AnnotationAwareAspectJAutoProxyCreator
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 			for (BeanPostProcessor bp : getBeanPostProcessors()) {
 				if (bp instanceof InstantiationAwareBeanPostProcessor) {
@@ -1409,13 +1409,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		PropertyDescriptor[] filteredPds = null;
 		if (hasInstAwareBpps) {
 			if (pvs == null) {
-				pvs = mbd.getPropertyValues();
+				pvs = mbd.getPropertyValues();	// 获取 RootBeanDefinition 的属性值
 			}
 			for (BeanPostProcessor bp : getBeanPostProcessors()) {
 				if (bp instanceof InstantiationAwareBeanPostProcessor) {
 					InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
 					PropertyValues pvsToUse = ibp.postProcessProperties(pvs, bw.getWrappedInstance(), beanName);
-					if (pvsToUse == null) {
+					if (pvsToUse == null) {	// 通过 InstantiationAwareBeanPostProcessor 实例对 RootBeanDefinition 的属性值进行处理
 						if (filteredPds == null) {
 							filteredPds = filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
 						}
@@ -1435,7 +1435,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			checkDependencies(beanName, mbd, filteredPds, pvs);
 		}
 
-		if (pvs != null) {
+		if (pvs != null) {	// 将属性值应用到 bw 中
 			applyPropertyValues(beanName, mbd, bw, pvs);
 		}
 	}
@@ -1636,7 +1636,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @param mbd the merged bean definition
 	 * @param bw the BeanWrapper wrapping the target object
 	 * @param pvs the new property values
-	 */
+	 */	// 将处理后的属性值填充到 BeanWrapper 对应的 bean 中
 	protected void applyPropertyValues(String beanName, BeanDefinition mbd, BeanWrapper bw, PropertyValues pvs) {
 		if (pvs.isEmpty()) {
 			return;
@@ -1654,7 +1654,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			if (mpvs.isConverted()) {
 				// Shortcut: use the pre-converted values as-is.
 				try {
-					bw.setPropertyValues(mpvs);
+					bw.setPropertyValues(mpvs);	// 将属性值应用到 BeanWrapper 中
 					return;
 				}
 				catch (BeansException ex) {

@@ -100,7 +100,7 @@ public class ProxyCreatorSupport extends AdvisedSupport {
 	 */
 	protected final synchronized AopProxy createAopProxy() {
 		if (!this.active) {
-			activate();
+			activate();	// 激活代理工厂，通知监听器
 		}
 		return getAopProxyFactory().createAopProxy(this);
 	}
@@ -108,7 +108,7 @@ public class ProxyCreatorSupport extends AdvisedSupport {
 	/**
 	 * Activate this proxy configuration.
 	 * @see AdvisedSupportListener#activated
-	 */
+	 */	// 激活代理工厂，通知监听器
 	private void activate() {
 		this.active = true;
 		for (AdvisedSupportListener listener : this.listeners) {

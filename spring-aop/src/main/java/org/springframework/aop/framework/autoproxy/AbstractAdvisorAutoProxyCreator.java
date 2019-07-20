@@ -62,20 +62,20 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 		}
 		initBeanFactory((ConfigurableListableBeanFactory) beanFactory);
 	}
-
+	// 封装 ConfigurableListableBeanFactory 为 BeanFactoryAdvisorRetrievalHelperAdapter 并进行缓存
 	protected void initBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		this.advisorRetrievalHelper = new BeanFactoryAdvisorRetrievalHelperAdapter(beanFactory);
 	}
 
 
 	@Override
-	@Nullable
+	@Nullable	// 获取满足 beanClass 的 advisor，进行过排序
 	protected Object[] getAdvicesAndAdvisorsForBean(
 			Class<?> beanClass, String beanName, @Nullable TargetSource targetSource) {
-
+		// 获取满足 beanClass 的 advisor，进行过排序
 		List<Advisor> advisors = findEligibleAdvisors(beanClass, beanName);
 		if (advisors.isEmpty()) {
-			return DO_NOT_PROXY;
+			return DO_NOT_PROXY;	// 如果没有增强器，就不需要进行代理
 		}
 		return advisors.toArray();
 	}
@@ -91,11 +91,11 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	 * @see #extendAdvisors
 	 */
 	protected List<Advisor> findEligibleAdvisors(Class<?> beanClass, String beanName) {
-		List<Advisor> candidateAdvisors = findCandidateAdvisors();
-		List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
-		extendAdvisors(eligibleAdvisors);
+		List<Advisor> candidateAdvisors = findCandidateAdvisors();	// 获取候选的增强器
+		List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);	// 获取能够使用的增强器
+		extendAdvisors(eligibleAdvisors);	// 看 advisors 是否有切面增强器，有的话就在首位添加一个 DefaultPointcutAdvisor（ExposeInvocationInterceptor.ADVISOR）
 		if (!eligibleAdvisors.isEmpty()) {
-			eligibleAdvisors = sortAdvisors(eligibleAdvisors);
+			eligibleAdvisors = sortAdvisors(eligibleAdvisors);	// 对 advisors 进行排序
 		}
 		return eligibleAdvisors;
 	}
@@ -117,12 +117,12 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	 * @param beanName the target's bean name
 	 * @return the List of applicable Advisors
 	 * @see ProxyCreationContext#getCurrentProxiedBeanName()
-	 */
+	 */	// 判断 advisor 是否能应用到 targetClass，IntroductionAdvisor 通过 classFilter 过滤，PointcutAdvisor 通过切点来匹配（通过引介方法匹配器来确定当前 advisor 是否能应用到 target class 上）
 	protected List<Advisor> findAdvisorsThatCanApply(
 			List<Advisor> candidateAdvisors, Class<?> beanClass, String beanName) {
 
 		ProxyCreationContext.setCurrentProxiedBeanName(beanName);
-		try {
+		try {	// 判断 advisor 是否能应用到 targetClass，IntroductionAdvisor 通过 classFilter 过滤，PointcutAdvisor 通过切点来匹配（通过引介方法匹配器来确定当前 advisor 是否能应用到 target class 上）
 			return AopUtils.findAdvisorsThatCanApply(candidateAdvisors, beanClass);
 		}
 		finally {

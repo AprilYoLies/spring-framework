@@ -15,6 +15,7 @@
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd">
 
 	<aop:aspectj-autoproxy/>
+
 	<bean id="test" class="top.aprilyolies.example.aop.TestBean"/>
-	<bean class="top.aprilyolies.example.aop.AspectJBean"/>
+	<bean id="aspectJBean" class="top.aprilyolies.example.aop.AspectJBean"/>
 </beans>

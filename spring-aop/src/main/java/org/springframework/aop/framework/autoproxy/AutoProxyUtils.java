@@ -64,7 +64,7 @@ public abstract class AutoProxyUtils {
 	 * @param beanFactory the containing ConfigurableListableBeanFactory
 	 * @param beanName the name of the bean
 	 * @return whether the given bean should be proxied with its target class
-	 */
+	 */	// 看是否属性值指定了 org.springframework.aop.framework.autoproxy.AutoProxyUtils.preserveTargetClass，这种情况采用目标类代理方式 cglib
 	public static boolean shouldProxyTargetClass(
 			ConfigurableListableBeanFactory beanFactory, @Nullable String beanName) {
 
