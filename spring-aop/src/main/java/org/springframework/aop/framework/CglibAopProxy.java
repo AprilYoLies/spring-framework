@@ -673,7 +673,7 @@ class CglibAopProxy implements AopProxy, Serializable {
 				target = targetSource.getTarget();
 				Class<?> targetClass = (target != null ? target.getClass() : null);
 				List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
-				Object retVal;
+				Object retVal;	// 尝试从缓存中获取 interceptorList，没有的话就从当前实例中获取（获取 Advised 的全部 advisors，看 advisor 是否适配当前方法，适配的话从 advisor 中获取到 Advice，然后将其添加到 interceptorList 集合返回）
 				// Check whether we only have one InvokerInterceptor: that is,
 				// no real advice, but just reflective invocation of the target.
 				if (chain.isEmpty() && Modifier.isPublic(method.getModifiers())) {
@@ -682,10 +682,10 @@ class CglibAopProxy implements AopProxy, Serializable {
 					// it does nothing but a reflective operation on the target, and no hot
 					// swapping or fancy proxying.
 					Object[] argsToUse = AopProxyUtils.adaptArgumentsIfNecessary(method, args);
-					retVal = methodProxy.invoke(target, argsToUse);
+					retVal = methodProxy.invoke(target, argsToUse);	// 这里是没有拦截器的方法调用方式
 				}
 				else {
-					// We need to create a method invocation...
+					// We need to create a method invocation...	// 将代理相关的参数构建为 CglibMethodInvocation，进行处理，也就是说通过 CglibMethodInvocation 来触发 advice 的调用
 					retVal = new CglibMethodInvocation(proxy, target, method, args, targetClass, chain, methodProxy).proceed();
 				}
 				retVal = processReturnType(proxy, target, method, retVal);

@@ -6,7 +6,7 @@ import org.aspectj.lang.annotation.*;
 
 @Aspect
 public class AspectJBean {
-    @Pointcut("execution(* *.test(..))")	// 这个可能就是引介增强方法，这里可能就是切点
+    @Pointcut("execution(* *.test*(..))")	// 这个可能就是引介增强方法，这里可能就是切点
     public void test() {}
 
     @Before("test()")	// 这个可能就是切点增强方法
@@ -31,4 +31,5 @@ public class AspectJBean {
 		System.out.println("aroundAfter");
 		return o;
 	}
+
 }

@@ -160,10 +160,10 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 	public Object proceed() throws Throwable {
 		//	We start with an index of -1 and increment early.
 		if (this.currentInterceptorIndex == this.interceptorsAndDynamicMethodMatchers.size() - 1) {
-			return invokeJoinpoint();
+			return invokeJoinpoint();	// 这里就是触发连接点方法
 		}
 
-		Object interceptorOrInterceptionAdvice =
+		Object interceptorOrInterceptionAdvice =	// 逐个获取 interceptorOrInterceptionAdvice
 				this.interceptorsAndDynamicMethodMatchers.get(++this.currentInterceptorIndex);
 		if (interceptorOrInterceptionAdvice instanceof InterceptorAndDynamicMethodMatcher) {
 			// Evaluate dynamic method matcher here: static part will already have
@@ -182,8 +182,8 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 		}
 		else {
 			// It's an interceptor, so we just invoke it: The pointcut will have
-			// been evaluated statically before this object was constructed.
-			return ((MethodInterceptor) interceptorOrInterceptionAdvice).invoke(this);
+			// been evaluated statically before this object was constructed.	// 对逐个获取的 interceptorOrInterceptionAdvice 进行 invoke 调用
+			return ((MethodInterceptor) interceptorOrInterceptionAdvice).invoke(this);	// 参数为通过代理各项参数构建的 CglibMethodInvocation
 		}
 	}
 

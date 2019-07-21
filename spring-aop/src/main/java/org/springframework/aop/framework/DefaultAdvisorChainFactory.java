@@ -47,7 +47,7 @@ import org.springframework.lang.Nullable;
 @SuppressWarnings("serial")
 public class DefaultAdvisorChainFactory implements AdvisorChainFactory, Serializable {
 
-	@Override
+	@Override	// 获取 Advised 的全部 advisors，看 advisor 是否适配当前方法，适配的话从 advisor 中获取到 Advice，然后将其添加到 interceptorList 集合返回
 	public List<Object> getInterceptorsAndDynamicInterceptionAdvice(
 			Advised config, Method method, @Nullable Class<?> targetClass) {
 
@@ -66,7 +66,7 @@ public class DefaultAdvisorChainFactory implements AdvisorChainFactory, Serializ
 				if (config.isPreFiltered() || pointcutAdvisor.getPointcut().getClassFilter().matches(actualClass)) {
 					MethodMatcher mm = pointcutAdvisor.getPointcut().getMethodMatcher();
 					boolean match;
-					if (mm instanceof IntroductionAwareMethodMatcher) {
+					if (mm instanceof IntroductionAwareMethodMatcher) {	// 通过当前 advisor 的 MethodMatcher 是否适配当前 class 或者 method
 						if (hasIntroductions == null) {
 							hasIntroductions = hasMatchingIntroductions(advisors, actualClass);
 						}
@@ -75,7 +75,7 @@ public class DefaultAdvisorChainFactory implements AdvisorChainFactory, Serializ
 					else {
 						match = mm.matches(method, actualClass);
 					}
-					if (match) {
+					if (match) {	// 获取增强器中的增强，如果是方法拦截器实例，添加到 interceptors 集合中，看适配器是否适配 advice，适配的话，也需要添加到 interceptors 集合中
 						MethodInterceptor[] interceptors = registry.getInterceptors(advisor);
 						if (mm.isRuntime()) {
 							// Creating a new object instance in the getInterceptors() method

@@ -47,7 +47,7 @@ public class LazySingletonAspectInstanceFactoryDecorator implements MetadataAwar
 	}
 
 
-	@Override
+	@Override	// 获取切面实例
 	public Object getAspectInstance() {
 		Object aspectInstance = this.materialized;
 		if (aspectInstance == null) {
