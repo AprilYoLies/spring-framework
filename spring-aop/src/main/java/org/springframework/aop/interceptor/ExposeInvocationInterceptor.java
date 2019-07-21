@@ -90,7 +90,7 @@ public final class ExposeInvocationInterceptor implements MethodInterceptor, Pri
 		MethodInvocation oldInvocation = invocation.get();
 		invocation.set(mi);
 		try {
-			return mi.proceed();
+			return mi.proceed();	// 继续下一个 advice 的调用
 		}
 		finally {
 			invocation.set(oldInvocation);

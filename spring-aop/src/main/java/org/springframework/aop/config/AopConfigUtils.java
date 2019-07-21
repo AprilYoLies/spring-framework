@@ -99,14 +99,14 @@ public abstract class AopConfigUtils {
 		// 尝试向 DefaultListableBeanFactory 中注册 AnnotationAwareAspectJAutoProxyCreator 对应的 bean，如果已存在，则注册优先级较高的那个
 		return registerOrEscalateApcAsRequired(AnnotationAwareAspectJAutoProxyCreator.class, registry, source);
 	}
-
+	// 为 AUTO_PROXY_CREATOR_BEAN_NAME 对应的 BeanDefinition 添加一个 proxyTargetClass 属性，值为 true
 	public static void forceAutoProxyCreatorToUseClassProxying(BeanDefinitionRegistry registry) {
 		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
 			BeanDefinition definition = registry.getBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME);
 			definition.getPropertyValues().add("proxyTargetClass", Boolean.TRUE);
 		}
 	}
-
+	// 为 AUTO_PROXY_CREATOR_BEAN_NAME 对应的 BeanDefinition 添加一个 exposeProxy 属性，值为 true
 	public static void forceAutoProxyCreatorToExposeProxy(BeanDefinitionRegistry registry) {
 		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
 			BeanDefinition definition = registry.getBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME);

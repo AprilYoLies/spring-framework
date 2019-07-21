@@ -185,7 +185,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			delegate.parseCustomElement(root);	// 这个分支就是解析用户自定义的 Namespace 标签
 		}
 	}
-	// 解析自定义的标签，可以看出来有 import、alias、bean、beans
+	// 解析默认的标签，可以看出来有 import、alias、bean、beans
 	private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
 		if (delegate.nodeNameEquals(ele, IMPORT_ELEMENT)) {
 			importBeanDefinitionResource(ele);

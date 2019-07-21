@@ -662,11 +662,11 @@ class CglibAopProxy implements AopProxy, Serializable {
 			Object oldProxy = null;
 			boolean setProxyContext = false;
 			Object target = null;
-			TargetSource targetSource = this.advised.getTargetSource();
+			TargetSource targetSource = this.advised.getTargetSource();	// 持有目标实例
 			try {
 				if (this.advised.exposeProxy) {
 					// Make invocation available if necessary.
-					oldProxy = AopContext.setCurrentProxy(proxy);
+					oldProxy = AopContext.setCurrentProxy(proxy);	// 如果要暴露代理类，那么就将代理类保存到 AopContext
 					setProxyContext = true;
 				}
 				// Get as late as possible to minimize the time we "own" the target, in case it comes from a pool...
