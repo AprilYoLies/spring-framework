@@ -194,9 +194,9 @@ public class ConnectionHolder extends ResourceHolderSupport {
 	 * returned once the data operation is done, to make the Connection available
 	 * for other operations within the same transaction.
 	 */
-	@Override
+	@Override	// 就是将当前的 currentConnection 指向 null 就可以了
 	public void released() {
-		super.released();
+		super.released();	// 引用数减一
 		if (!isOpen() && this.currentConnection != null) {
 			if (this.connectionHandle != null) {
 				this.connectionHandle.releaseConnection(this.currentConnection);

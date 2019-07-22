@@ -130,7 +130,7 @@ public class DefaultTransactionAttribute extends DefaultTransactionDefinition im
 	 * intentionally declared as business exceptions, leading to a commit by default.
 	 * @see org.springframework.transaction.support.TransactionTemplate#execute
 	 */
-	@Override
+	@Override	// 这里说明只有在发生运行时异常和错误时才会触发回滚
 	public boolean rollbackOn(Throwable ex) {
 		return (ex instanceof RuntimeException || ex instanceof Error);
 	}

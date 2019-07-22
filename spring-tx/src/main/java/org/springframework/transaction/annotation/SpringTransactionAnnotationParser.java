@@ -45,7 +45,7 @@ public class SpringTransactionAnnotationParser implements TransactionAnnotationP
 	}
 
 	@Override
-	@Nullable
+	@Nullable	// 解析事务注解
 	public TransactionAttribute parseTransactionAnnotation(AnnotatedElement element) {
 		AnnotationAttributes attributes = AnnotatedElementUtils.findMergedAnnotationAttributes(
 				element, Transactional.class, false, false);

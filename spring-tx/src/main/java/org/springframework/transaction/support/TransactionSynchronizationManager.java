@@ -204,10 +204,10 @@ public abstract class TransactionSynchronizationManager {
 	 * @return the previously bound value (usually the active resource object)
 	 * @throws IllegalStateException if there is no value bound to the thread
 	 * @see ResourceTransactionManager#getResourceFactory()
-	 */
+	 */	// 线程本地变量中移除资源信息（连接信息）
 	public static Object unbindResource(Object key) throws IllegalStateException {
 		Object actualKey = TransactionSynchronizationUtils.unwrapResourceIfNecessary(key);
-		Object value = doUnbindResource(actualKey);
+		Object value = doUnbindResource(actualKey);	// 线程本地变量中移除资源信息（连接信息）
 		if (value == null) {
 			throw new IllegalStateException(
 					"No value for key [" + actualKey + "] bound to thread [" + Thread.currentThread().getName() + "]");
@@ -229,7 +229,7 @@ public abstract class TransactionSynchronizationManager {
 	/**
 	 * Actually remove the value of the resource that is bound for the given key.
 	 */
-	@Nullable
+	@Nullable	// 线程本地变量中移除资源信息（连接信息）
 	private static Object doUnbindResource(Object actualKey) {
 		Map<Object, Object> map = resources.get();
 		if (map == null) {
@@ -305,9 +305,9 @@ public abstract class TransactionSynchronizationManager {
 	 * @return unmodifiable List of TransactionSynchronization instances
 	 * @throws IllegalStateException if synchronization is not active
 	 * @see TransactionSynchronization
-	 */
+	 */	// 尝试获取事务同步器集合
 	public static List<TransactionSynchronization> getSynchronizations() throws IllegalStateException {
-		Set<TransactionSynchronization> synchs = synchronizations.get();
+		Set<TransactionSynchronization> synchs = synchronizations.get();	// 从线程本地变量中获取事务同步器
 		if (synchs == null) {
 			throw new IllegalStateException("Transaction synchronization is not active");
 		}

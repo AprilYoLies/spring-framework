@@ -220,7 +220,7 @@ public abstract class DataSourceUtils {
 	 * @param con the Connection to reset
 	 * @param previousIsolationLevel the isolation level to restore, if any
 	 * @see #prepareConnectionForTransaction
-	 */
+	 */	// 恢复连接的隔离级别
 	public static void resetConnectionAfterTransaction(Connection con, @Nullable Integer previousIsolationLevel) {
 		Assert.notNull(con, "No Connection specified");
 		try {
@@ -230,7 +230,7 @@ public abstract class DataSourceUtils {
 					logger.debug("Resetting isolation level of JDBC Connection [" +
 							con + "] to " + previousIsolationLevel);
 				}
-				con.setTransactionIsolation(previousIsolationLevel);
+				con.setTransactionIsolation(previousIsolationLevel);	// 设置隔离级别
 			}
 
 			// Reset read-only flag.
@@ -307,9 +307,9 @@ public abstract class DataSourceUtils {
 	 * @param dataSource the DataSource that the Connection was obtained from
 	 * (may be {@code null})
 	 * @see #getConnection
-	 */
+	 */	// 根据情况释放连接资源，要不就是关闭，要不就是取消对于连接的引用
 	public static void releaseConnection(@Nullable Connection con, @Nullable DataSource dataSource) {
-		try {
+		try {	// 根据情况释放连接资源，要不就是关闭，要不就是取消对于连接的引用
 			doReleaseConnection(con, dataSource);
 		}
 		catch (SQLException ex) {
@@ -330,7 +330,7 @@ public abstract class DataSourceUtils {
 	 * (may be {@code null})
 	 * @throws SQLException if thrown by JDBC methods
 	 * @see #doGetConnection
-	 */
+	 */	// 根据情况释放连接资源，要不就是关闭，要不就是取消对于连接的引用
 	public static void doReleaseConnection(@Nullable Connection con, @Nullable DataSource dataSource) throws SQLException {
 		if (con == null) {
 			return;
@@ -339,7 +339,7 @@ public abstract class DataSourceUtils {
 			ConnectionHolder conHolder = (ConnectionHolder) TransactionSynchronizationManager.getResource(dataSource);
 			if (conHolder != null && connectionEquals(conHolder, con)) {
 				// It's the transactional Connection: Don't close it.
-				conHolder.released();
+				conHolder.released();	// 就是将当前的 currentConnection 指向 null 就可以了
 				return;
 			}
 		}

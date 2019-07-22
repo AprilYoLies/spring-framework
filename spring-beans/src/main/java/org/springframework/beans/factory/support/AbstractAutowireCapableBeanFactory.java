@@ -440,7 +440,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			throws BeansException {
 
 		Object result = existingBean;
-		for (BeanPostProcessor processor : getBeanPostProcessors()) {
+		for (BeanPostProcessor processor : getBeanPostProcessors()) {	// 遍历容器中已经存在的后置处理器，逐个的完成对 bean 的处理
 			Object current = processor.postProcessAfterInitialization(result, beanName);    // 尝试从缓存中获取代理 bean，没有的话进行构建，核心就是构建 enhancer，根据 enhancer 构建代理类 class，然后通过 class 构建代理类实例，最后将 callbacks 设置到其中
 			if (current == null) {
 				return result;
@@ -525,7 +525,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		try {
-			Object beanInstance = doCreateBean(beanName, mbdToUse, args);
+			Object beanInstance = doCreateBean(beanName, mbdToUse, args);	// 真正的创建 bean 的逻辑
 			if (logger.isTraceEnabled()) {
 				logger.trace("Finished creating instance of bean '" + beanName + "'");
 			}
@@ -600,8 +600,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Initialize the bean instance.
 		Object exposedObject = bean;
 		try {
-			populateBean(beanName, mbd, instanceWrapper);
-			exposedObject = initializeBean(beanName, exposedObject, mbd);
+			populateBean(beanName, mbd, instanceWrapper);	// 填充 bean 的必要属性
+			exposedObject = initializeBean(beanName, exposedObject, mbd);	// 完成 bean 的初始化
 		} catch (Throwable ex) {
 			if (ex instanceof BeanCreationException && beanName.equals(((BeanCreationException) ex).getBeanName())) {
 				throw (BeanCreationException) ex;
@@ -1796,7 +1796,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					beanName, "Invocation of init method failed", ex);
 		}
 		if (mbd == null || !mbd.isSynthetic()) {
-			wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
+			wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);	// 应用 bean 的后置处理器
 		}
 
 		return wrappedBean;

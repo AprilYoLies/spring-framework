@@ -40,12 +40,12 @@ abstract class TransactionAttributeSourcePointcut extends StaticMethodMatcherPoi
 		setClassFilter(new TransactionAttributeSourceClassFilter());
 	}
 
-
+	// 尝试从缓存中获取 TransactionAttribute，没有获取到的话尝试从 method 或者声明方法的类上获取 TransactionAttribute 信息，设置描述信息，缓存后返回
 	@Override
 	public boolean matches(Method method, Class<?> targetClass) {
-		TransactionAttributeSource tas = getTransactionAttributeSource();
+		TransactionAttributeSource tas = getTransactionAttributeSource();	// 获取 TransactionAttributeSource
 		return (tas == null || tas.getTransactionAttribute(method, targetClass) != null);
-	}
+	}	// 尝试从缓存中获取 TransactionAttribute，没有获取到的话尝试从 method 或者声明方法的类上获取 TransactionAttribute 信息，设置描述信息，缓存后返回
 
 	@Override
 	public boolean equals(@Nullable Object other) {

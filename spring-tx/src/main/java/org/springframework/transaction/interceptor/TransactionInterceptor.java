@@ -50,7 +50,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @see org.springframework.aop.framework.ProxyFactory
  */
 @SuppressWarnings("serial")
-public class TransactionInterceptor extends TransactionAspectSupport implements MethodInterceptor, Serializable {
+public class TransactionInterceptor extends TransactionAspectSupport implements MethodInterceptor, Serializable {	// 实现了 MethodInterceptor 接口，说明它可以被当做方法拦截器使用
 
 	/**
 	 * Create a new TransactionInterceptor.
@@ -88,11 +88,11 @@ public class TransactionInterceptor extends TransactionAspectSupport implements 
 
 
 	@Override
-	@Nullable
+	@Nullable	// 事务拦截器的调用
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		// Work out the target class: may be {@code null}.
 		// The TransactionAttributeSource should be passed the target class
-		// as well as the method, which may be from an interface.
+		// as well as the method, which may be from an interface.	获取目标类的类型
 		Class<?> targetClass = (invocation.getThis() != null ? AopUtils.getTargetClass(invocation.getThis()) : null);
 
 		// Adapt to TransactionAspectSupport's invokeWithinTransaction...

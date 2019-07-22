@@ -234,7 +234,7 @@ public abstract class AopUtils {
 		}
 
 		IntroductionAwareMethodMatcher introductionAwareMethodMatcher = null;
-		if (methodMatcher instanceof IntroductionAwareMethodMatcher) {	// 是引介方法匹配器的处理
+		if (methodMatcher instanceof IntroductionAwareMethodMatcher) {	// 看当前 methodMatcher 是否是 IntroductionAwareMethodMatcher
 			introductionAwareMethodMatcher = (IntroductionAwareMethodMatcher) methodMatcher;
 		}
 
@@ -246,10 +246,10 @@ public abstract class AopUtils {
 
 		for (Class<?> clazz : classes) {
 			Method[] methods = ReflectionUtils.getAllDeclaredMethods(clazz);
-			for (Method method : methods) {
+			for (Method method : methods) {	// 遍历所有接口的方法，看是否有匹配的方法
 				if (introductionAwareMethodMatcher != null ?
 						introductionAwareMethodMatcher.matches(method, targetClass, hasIntroductions) :
-						methodMatcher.matches(method, targetClass)) {
+						methodMatcher.matches(method, targetClass)) {	// 看当前增强是否适配参数指定的 method 或者类
 					return true;
 				}
 			}

@@ -53,7 +53,7 @@ public abstract class DelegatingTransactionAttribute extends DelegatingTransacti
 		return this.targetAttribute.getQualifier();
 	}
 
-	@Override
+	@Override	// 这里主要是判断回滚规则，最基本的就是在发生运行时异常和错误时发生回滚
 	public boolean rollbackOn(Throwable ex) {
 		return this.targetAttribute.rollbackOn(ex);
 	}

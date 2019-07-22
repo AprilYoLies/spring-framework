@@ -52,14 +52,14 @@ public abstract class AopNamespaceUtils {
 	 */
 	private static final String EXPOSE_PROXY_ATTRIBUTE = "expose-proxy";
 
-
+	// 核心就是注册了 InfrastructureAdvisorAutoProxyCreator 对应的 bean，并设置了它创建代理的方式
 	public static void registerAutoProxyCreatorIfNecessary(
 			ParserContext parserContext, Element sourceElement) {
-
+		// 尝试向 DefaultListableBeanFactory 中注册 InfrastructureAdvisorAutoProxyCreator 对应的 bean，如果已存在，则注册优先级较高的那个
 		BeanDefinition beanDefinition = AopConfigUtils.registerAutoProxyCreatorIfNecessary(
 				parserContext.getRegistry(), parserContext.extractSource(sourceElement));
-		useClassProxyingIfNecessary(parserContext.getRegistry(), sourceElement);
-		registerComponentIfNecessary(beanDefinition, parserContext);
+		useClassProxyingIfNecessary(parserContext.getRegistry(), sourceElement);	// 对于当前标签 proxy-target-class 和 expose-proxy 属性的处理
+		registerComponentIfNecessary(beanDefinition, parserContext);	// 向 parserContext 注册 beanDefinition（被封装为 BeanComponentDefinition）
 	}
 
 	public static void registerAspectJAutoProxyCreatorIfNecessary(

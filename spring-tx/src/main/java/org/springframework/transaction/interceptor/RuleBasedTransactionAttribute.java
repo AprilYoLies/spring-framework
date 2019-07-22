@@ -128,7 +128,7 @@ public class RuleBasedTransactionAttribute extends DefaultTransactionAttribute i
 	 * return false.
 	 * @see TransactionAttribute#rollbackOn(java.lang.Throwable)
 	 */
-	@Override
+	@Override	// 这里主要是判断回滚规则，最基本的就是在发生运行时异常和错误时发生回滚
 	public boolean rollbackOn(Throwable ex) {
 		if (logger.isTraceEnabled()) {
 			logger.trace("Applying rules to determine whether transaction should rollback on " + ex);
@@ -154,7 +154,7 @@ public class RuleBasedTransactionAttribute extends DefaultTransactionAttribute i
 		// User superclass behavior (rollback on unchecked) if no rule matches.
 		if (winner == null) {
 			logger.trace("No relevant rollback rule found: applying default rules");
-			return super.rollbackOn(ex);
+			return super.rollbackOn(ex);	// 这里说明只有在发生运行时异常和错误时才会触发回滚
 		}
 
 		return !(winner instanceof NoRollbackRuleAttribute);

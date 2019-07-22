@@ -100,11 +100,11 @@ public abstract class TransactionSynchronizationUtils {
 	/**
 	 * Trigger {@code beforeCompletion} callbacks on all currently registered synchronizations.
 	 * @see TransactionSynchronization#beforeCompletion()
-	 */
-	public static void triggerBeforeCompletion() {
+	 */	// 尝试调用事务同步器的前置处理方法
+	public static void triggerBeforeCompletion() {	// 遍历获取的事务同步器集合
 		for (TransactionSynchronization synchronization : TransactionSynchronizationManager.getSynchronizations()) {
 			try {
-				synchronization.beforeCompletion();
+				synchronization.beforeCompletion();	// 调用同步器的前置处理方法
 			}
 			catch (Throwable tsex) {
 				logger.error("TransactionSynchronization.beforeCompletion threw exception", tsex);
@@ -161,7 +161,7 @@ public abstract class TransactionSynchronizationUtils {
 	 * @see TransactionSynchronization#STATUS_COMMITTED
 	 * @see TransactionSynchronization#STATUS_ROLLED_BACK
 	 * @see TransactionSynchronization#STATUS_UNKNOWN
-	 */
+	 */	// 逐个触发同步器链每个元素的 afterCompletion 方法
 	public static void invokeAfterCompletion(@Nullable List<TransactionSynchronization> synchronizations,
 			int completionStatus) {
 

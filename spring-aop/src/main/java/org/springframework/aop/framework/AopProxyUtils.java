@@ -114,12 +114,12 @@ public abstract class AopProxyUtils {
 	 * @see SpringProxy
 	 * @see Advised
 	 * @see DecoratingProxy
-	 */
+	 */	// 获取全部的代理接口集合，包括 advised 中获取的全部接口集合以及制定的三个接口
 	static Class<?>[] completeProxiedInterfaces(AdvisedSupport advised, boolean decoratingProxy) {
-		Class<?>[] specifiedInterfaces = advised.getProxiedInterfaces();
+		Class<?>[] specifiedInterfaces = advised.getProxiedInterfaces();	// 获取 advised 中的接口信息
 		if (specifiedInterfaces.length == 0) {
 			// No user-specified interfaces: check whether target class is an interface.
-			Class<?> targetClass = advised.getTargetClass();
+			Class<?> targetClass = advised.getTargetClass();	// 如果不能直接从 advised 中获取接口信息，那么就间接从目标类获取接口信息
 			if (targetClass != null) {
 				if (targetClass.isInterface()) {
 					advised.setInterfaces(targetClass);
@@ -146,7 +146,7 @@ public abstract class AopProxyUtils {
 		Class<?>[] proxiedInterfaces = new Class<?>[specifiedInterfaces.length + nonUserIfcCount];
 		System.arraycopy(specifiedInterfaces, 0, proxiedInterfaces, 0, specifiedInterfaces.length);
 		int index = specifiedInterfaces.length;
-		if (addSpringProxy) {
+		if (addSpringProxy) {	// 除了从 advised 中获取的接口信息，还需要添加如下三个接口与
 			proxiedInterfaces[index] = SpringProxy.class;
 			index++;
 		}

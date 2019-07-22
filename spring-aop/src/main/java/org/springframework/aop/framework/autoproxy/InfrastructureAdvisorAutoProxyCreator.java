@@ -27,7 +27,7 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @since 2.0.7
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial")	// 这个应该是负责 spring 内部基础构件的代理创建，它实现了 SmartInstantiationAwareBeanPostProcessor 接口
 public class InfrastructureAdvisorAutoProxyCreator extends AbstractAdvisorAutoProxyCreator {
 
 	@Nullable

@@ -333,22 +333,22 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 		}
 	}
 
-	@Override
+	@Override	// 进行事务的回滚操作
 	protected void doRollback(DefaultTransactionStatus status) {
-		DataSourceTransactionObject txObject = (DataSourceTransactionObject) status.getTransaction();
-		Connection con = txObject.getConnectionHolder().getConnection();
+		DataSourceTransactionObject txObject = (DataSourceTransactionObject) status.getTransaction();	// 数据源事务对象
+		Connection con = txObject.getConnectionHolder().getConnection();	// 也就是说和数据库交互相关的信息都保存在 DataSourceTransactionObject 实例中
 		if (status.isDebug()) {
 			logger.debug("Rolling back JDBC transaction on Connection [" + con + "]");
 		}
 		try {
-			con.rollback();
+			con.rollback();	// 调用真正的回滚操作
 		}
 		catch (SQLException ex) {
 			throw new TransactionSystemException("Could not roll back JDBC transaction", ex);
 		}
 	}
 
-	@Override
+	@Override	// 仅仅是设置回滚的标志
 	protected void doSetRollbackOnly(DefaultTransactionStatus status) {
 		DataSourceTransactionObject txObject = (DataSourceTransactionObject) status.getTransaction();
 		if (status.isDebug()) {
@@ -358,21 +358,21 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 		txObject.setRollbackOnly();
 	}
 
-	@Override
+	@Override	// 线程本地变量中移除资源信息（连接信息），设置连接的自动提交，恢复隔离级别，释放连接，恢复 connection holder 的状态信息
 	protected void doCleanupAfterCompletion(Object transaction) {
 		DataSourceTransactionObject txObject = (DataSourceTransactionObject) transaction;
 
 		// Remove the connection holder from the thread, if exposed.
 		if (txObject.isNewConnectionHolder()) {
-			TransactionSynchronizationManager.unbindResource(obtainDataSource());
+			TransactionSynchronizationManager.unbindResource(obtainDataSource());	// 线程本地变量中移除资源信息（连接信息）
 		}
 
 		// Reset connection.
 		Connection con = txObject.getConnectionHolder().getConnection();
 		try {
 			if (txObject.isMustRestoreAutoCommit()) {
-				con.setAutoCommit(true);
-			}
+				con.setAutoCommit(true);	// 指定自动提交信息
+			}	// 恢复连接的隔离级别
 			DataSourceUtils.resetConnectionAfterTransaction(con, txObject.getPreviousIsolationLevel());
 		}
 		catch (Throwable ex) {
@@ -382,10 +382,10 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 		if (txObject.isNewConnectionHolder()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Releasing JDBC Connection [" + con + "] after transaction");
-			}
+			}	// 释放连接到数据源
 			DataSourceUtils.releaseConnection(con, this.dataSource);
 		}
-
+		// 恢复 connection holder 的状态信息
 		txObject.getConnectionHolder().clear();
 	}
 
