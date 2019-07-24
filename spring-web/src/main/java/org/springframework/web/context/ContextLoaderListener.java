@@ -97,7 +97,7 @@ public class ContextLoaderListener extends ContextLoader implements ServletConte
 
 	/**
 	 * Initialize the root web application context.
-	 */
+	 */	// 获取 context class 的类型，然后通过它来构建 WebApplicationContext 实例，让其持有 ServletContext，设置了 spring 配置文件的位置，完成部分属性的替换和设置，然后刷新和启动 ConfigurableWebApplicationContext
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		initWebApplicationContext(event.getServletContext());

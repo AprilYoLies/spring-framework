@@ -126,7 +126,7 @@ public abstract class AbstractRefreshableConfigApplicationContext extends Abstra
 	}
 
 
-	@Override
+	@Override	// 设置 id
 	public void setId(String id) {
 		super.setId(id);
 		this.setIdCalled = true;

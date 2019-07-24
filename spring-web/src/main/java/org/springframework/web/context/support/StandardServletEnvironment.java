@@ -90,7 +90,7 @@ public class StandardServletEnvironment extends StandardEnvironment implements C
 		super.customizePropertySources(propertySources);
 	}
 
-	@Override
+	@Override	// 根据 ServletConfig 来替换 MutablePropertySources 中 servletContextInitParams 和 servletConfigInitParams 两项属性的值
 	public void initPropertySources(@Nullable ServletContext servletContext, @Nullable ServletConfig servletConfig) {
 		WebApplicationContextUtils.initServletPropertySources(getPropertySources(), servletContext, servletConfig);
 	}
