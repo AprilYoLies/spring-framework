@@ -1,6 +1,13 @@
-plugins {
-    id 'java'
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "com.bmuschko:gradle-tomcat-plugin:2.2.3"
+    }
 }
+
+apply plugin: "com.bmuschko.tomcat"
 
 group 'org.springframework'
 version '5.2.0.BUILD-SNAPSHOT'
@@ -25,5 +32,13 @@ dependencies {
     compile group:'com.alibaba', name:'druid', version:'1.1.10'
     compile group:'mysql', name:'mysql-connector-java', version:'5.1.45'
 
-    testCompile("javax.servlet:javax.servlet-api:3.1.0")
+    compile("javax.servlet:javax.servlet-api:3.1.0")
+
+    def tomcatVersion = '8.0.27'
+    tomcat    "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
+            "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
+            "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
 }
+
+tomcatRun.contextPath = '/springmvc-demo'
+tomcatRunWar.contextPath = '/springmvc-demo'

@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class User implements Serializable {
+	public static final long serialVersionUID = -1;
+
     private Long id;
 
     private String username;
