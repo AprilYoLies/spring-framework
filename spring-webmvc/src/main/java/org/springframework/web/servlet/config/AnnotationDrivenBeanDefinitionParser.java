@@ -190,108 +190,126 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 	}
 
 
+	/**
+	 * CompositeComponentDefinition
+	 * RequestMappingHandlerMapping	(用来获取 HandlerExecutionChain，Controller 的请求路径和方法的映射关系保存在其中)
+	 * ConfigurableWebBindingInitializer
+	 * RequestMappingHandlerAdapter （用来验证 handler 是否可用）
+	 * ResponseStatusExceptionResolver
+	 * CompositeUriComponentsContributorFactoryBean
+	 * ConversionServiceExposingInterceptor
+	 * DefaultHandlerExceptionResolver
+	 * MappedInterceptor
+	 * ExceptionHandlerExceptionResolver
+	 * registerBeanNameUrlHandlerMapping(parserContext, source);
+	 * registerHttpRequestHandlerAdapter(parserContext, source);	（用来验证 handler 是否可用）
+	 * registerSimpleControllerHandlerAdapter(parserContext, source);	（用来验证 handler 是否可用）
+	 * registerHandlerMappingIntrospector(parserContext, source);
+	 */
+
+	// 构建了一系列的 bean
 	@Override
 	@Nullable
 	public BeanDefinition parse(Element element, ParserContext context) {
 		Object source = context.extractSource(element);
 		XmlReaderContext readerContext = context.getReaderContext();
-
+		// 名称为 mvc:annotation-driven 的 CompositeComponentDefinition
 		CompositeComponentDefinition compDefinition = new CompositeComponentDefinition(element.getTagName(), source);
-		context.pushContainingComponent(compDefinition);
-
+		context.pushContainingComponent(compDefinition);	// 将 compDefinition 放入一个双向队列
+		// 构建一个 ContentNegotiationManagerFactoryBean 对应的 BeanDefinition
 		RuntimeBeanReference contentNegotiationManager = getContentNegotiationManager(element, source, context);
-
+		// // 构建一个 RequestMappingHandlerMapping 对应的 BeanDefinition
 		RootBeanDefinition handlerMappingDef = new RootBeanDefinition(RequestMappingHandlerMapping.class);
 		handlerMappingDef.setSource(source);
 		handlerMappingDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		handlerMappingDef.getPropertyValues().add("order", 0);
-		handlerMappingDef.getPropertyValues().add("contentNegotiationManager", contentNegotiationManager);
-
+		handlerMappingDef.getPropertyValues().add("contentNegotiationManager", contentNegotiationManager);	// 持有了 ContentNegotiationManagerFactoryBean 对应的 BeanDefinition
+		// 如果有 enable-matrix-variables 属性为 true，handlerMappingDef 添加一个 removeSemicolonContent 属性
 		if (element.hasAttribute("enable-matrix-variables")) {
 			Boolean enableMatrixVariables = Boolean.valueOf(element.getAttribute("enable-matrix-variables"));
 			handlerMappingDef.getPropertyValues().add("removeSemicolonContent", !enableMatrixVariables);
 		}
-
+		// 对于 path-matching 子标签的处理
 		configurePathMatchingProperties(handlerMappingDef, element, context);
-		readerContext.getRegistry().registerBeanDefinition(HANDLER_MAPPING_BEAN_NAME, handlerMappingDef);
+		readerContext.getRegistry().registerBeanDefinition(HANDLER_MAPPING_BEAN_NAME, handlerMappingDef);	// 注册 RequestMappingHandlerMapping 对应的 bean，名字为 org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
 
 		RuntimeBeanReference corsRef = MvcNamespaceUtils.registerCorsConfigurations(null, context, source);
-		handlerMappingDef.getPropertyValues().add("corsConfigurations", corsRef);
-
+		handlerMappingDef.getPropertyValues().add("corsConfigurations", corsRef);	// handlerMappingDef 持有 source
+		// 获取 FormattingConversionServiceFactoryBean 对应的 BeanReference
 		RuntimeBeanReference conversionService = getConversionService(element, source, context);
-		RuntimeBeanReference validator = getValidator(element, source, context);
-		RuntimeBeanReference messageCodesResolver = getMessageCodesResolver(element);
-
+		RuntimeBeanReference validator = getValidator(element, source, context);	// 如果指定了 javaxValidationPresent，则构建 OptionalValidatorFactoryBean 对应的 BeanDefinition
+		RuntimeBeanReference messageCodesResolver = getMessageCodesResolver(element);	// 如果标签指定 message-codes-resolver 属性，则构建 messageCodesResolver
+		// 构建 ConfigurableWebBindingInitializer 对应的 BeanDefinition，持有了上边三种 BeanReference
 		RootBeanDefinition bindingDef = new RootBeanDefinition(ConfigurableWebBindingInitializer.class);
 		bindingDef.setSource(source);
 		bindingDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		bindingDef.getPropertyValues().add("conversionService", conversionService);
 		bindingDef.getPropertyValues().add("validator", validator);
 		bindingDef.getPropertyValues().add("messageCodesResolver", messageCodesResolver);
-
+		// 获取消息转换器
 		ManagedList<?> messageConverters = getMessageConverters(element, source, context);
-		ManagedList<?> argumentResolvers = getArgumentResolvers(element, context);
-		ManagedList<?> returnValueHandlers = getReturnValueHandlers(element, context);
+		ManagedList<?> argumentResolvers = getArgumentResolvers(element, context);	// 获取参数解析器
+		ManagedList<?> returnValueHandlers = getReturnValueHandlers(element, context);	// 返回值处理器
 		String asyncTimeout = getAsyncTimeout(element);
-		RuntimeBeanReference asyncExecutor = getAsyncExecutor(element);
-		ManagedList<?> callableInterceptors = getCallableInterceptors(element, source, context);
+		RuntimeBeanReference asyncExecutor = getAsyncExecutor(element);	// 获取异步执行器
+		ManagedList<?> callableInterceptors = getCallableInterceptors(element, source, context);	// 可执行拦截器
 		ManagedList<?> deferredResultInterceptors = getDeferredResultInterceptors(element, source, context);
-
+		// 构建 RequestMappingHandlerAdapter 对应的 BeanDefinition
 		RootBeanDefinition handlerAdapterDef = new RootBeanDefinition(RequestMappingHandlerAdapter.class);
 		handlerAdapterDef.setSource(source);
 		handlerAdapterDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		handlerAdapterDef.getPropertyValues().add("contentNegotiationManager", contentNegotiationManager);
 		handlerAdapterDef.getPropertyValues().add("webBindingInitializer", bindingDef);
 		handlerAdapterDef.getPropertyValues().add("messageConverters", messageConverters);
-		addRequestBodyAdvice(handlerAdapterDef);
-		addResponseBodyAdvice(handlerAdapterDef);
+		addRequestBodyAdvice(handlerAdapterDef);	// 如果指定了 jackson2，添加一个 requestBodyAdvice 属性 JsonViewRequestBodyAdvice 到 BeanDefinition
+		addResponseBodyAdvice(handlerAdapterDef);	// 如果指定了 jackson2，添加一个 responseBodyAdvice 属性 JsonViewResponseBodyAdvice 到 BeanDefinition
 
-		if (element.hasAttribute("ignore-default-model-on-redirect")) {
+		if (element.hasAttribute("ignore-default-model-on-redirect")) {	// 指定 ignoreDefaultModelOnRedirect
 			Boolean ignoreDefaultModel = Boolean.valueOf(element.getAttribute("ignore-default-model-on-redirect"));
 			handlerAdapterDef.getPropertyValues().add("ignoreDefaultModelOnRedirect", ignoreDefaultModel);
 		}
-		if (argumentResolvers != null) {
+		if (argumentResolvers != null) {	// 指定 customArgumentResolvers
 			handlerAdapterDef.getPropertyValues().add("customArgumentResolvers", argumentResolvers);
 		}
-		if (returnValueHandlers != null) {
+		if (returnValueHandlers != null) {	// 指定 customReturnValueHandlers
 			handlerAdapterDef.getPropertyValues().add("customReturnValueHandlers", returnValueHandlers);
 		}
-		if (asyncTimeout != null) {
+		if (asyncTimeout != null) {	// 指定 asyncRequestTimeout
 			handlerAdapterDef.getPropertyValues().add("asyncRequestTimeout", asyncTimeout);
 		}
-		if (asyncExecutor != null) {
+		if (asyncExecutor != null) {	// 指定 taskExecutor
 			handlerAdapterDef.getPropertyValues().add("taskExecutor", asyncExecutor);
 		}
 
 		handlerAdapterDef.getPropertyValues().add("callableInterceptors", callableInterceptors);
 		handlerAdapterDef.getPropertyValues().add("deferredResultInterceptors", deferredResultInterceptors);
 		readerContext.getRegistry().registerBeanDefinition(HANDLER_ADAPTER_BEAN_NAME, handlerAdapterDef);
-
+		// 构建了 CompositeUriComponentsContributorFactoryBean 对应的
 		RootBeanDefinition uriContributorDef =
 				new RootBeanDefinition(CompositeUriComponentsContributorFactoryBean.class);
 		uriContributorDef.setSource(source);
 		uriContributorDef.getPropertyValues().addPropertyValue("handlerAdapter", handlerAdapterDef);
 		uriContributorDef.getPropertyValues().addPropertyValue("conversionService", conversionService);
-		String uriContributorName = MvcUriComponentsBuilder.MVC_URI_COMPONENTS_CONTRIBUTOR_BEAN_NAME;
+		String uriContributorName = MvcUriComponentsBuilder.MVC_URI_COMPONENTS_CONTRIBUTOR_BEAN_NAME;	// 注册为 mvcUriComponentsContributor
 		readerContext.getRegistry().registerBeanDefinition(uriContributorName, uriContributorDef);
-
+		// 构建 ConversionServiceExposingInterceptor 对应的 BeanDefinition
 		RootBeanDefinition csInterceptorDef = new RootBeanDefinition(ConversionServiceExposingInterceptor.class);
 		csInterceptorDef.setSource(source);
-		csInterceptorDef.getConstructorArgumentValues().addIndexedArgumentValue(0, conversionService);
-		RootBeanDefinition mappedInterceptorDef = new RootBeanDefinition(MappedInterceptor.class);
+		csInterceptorDef.getConstructorArgumentValues().addIndexedArgumentValue(0, conversionService);	// 通过构造函数指定了 conversionService
+		RootBeanDefinition mappedInterceptorDef = new RootBeanDefinition(MappedInterceptor.class);	// 构建了 MappedInterceptor 对应的 BeanDefinition
 		mappedInterceptorDef.setSource(source);
 		mappedInterceptorDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		mappedInterceptorDef.getConstructorArgumentValues().addIndexedArgumentValue(0, (Object) null);
 		mappedInterceptorDef.getConstructorArgumentValues().addIndexedArgumentValue(1, csInterceptorDef);
 		String mappedInterceptorName = readerContext.registerWithGeneratedName(mappedInterceptorDef);
-
+		// 构建了 ExceptionHandlerExceptionResolver 对应的 BeanDefinition
 		RootBeanDefinition methodExceptionResolver = new RootBeanDefinition(ExceptionHandlerExceptionResolver.class);
 		methodExceptionResolver.setSource(source);
 		methodExceptionResolver.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		methodExceptionResolver.getPropertyValues().add("contentNegotiationManager", contentNegotiationManager);
 		methodExceptionResolver.getPropertyValues().add("messageConverters", messageConverters);
 		methodExceptionResolver.getPropertyValues().add("order", 0);
-		addResponseBodyAdvice(methodExceptionResolver);
+		addResponseBodyAdvice(methodExceptionResolver);	// 如果指定了 jackson2，添加一个 responseBodyAdvice 属性 JsonViewResponseBodyAdvice 到 BeanDefinition
 		if (argumentResolvers != null) {
 			methodExceptionResolver.getPropertyValues().add("customArgumentResolvers", argumentResolvers);
 		}
@@ -299,13 +317,13 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 			methodExceptionResolver.getPropertyValues().add("customReturnValueHandlers", returnValueHandlers);
 		}
 		String methodExResolverName = readerContext.registerWithGeneratedName(methodExceptionResolver);
-
+		// 构建了 ResponseStatusExceptionResolver 对应的 BeanDefinition
 		RootBeanDefinition statusExceptionResolver = new RootBeanDefinition(ResponseStatusExceptionResolver.class);
 		statusExceptionResolver.setSource(source);
 		statusExceptionResolver.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		statusExceptionResolver.getPropertyValues().add("order", 1);
 		String statusExResolverName = readerContext.registerWithGeneratedName(statusExceptionResolver);
-
+		// 构建了 DefaultHandlerExceptionResolver 对应的 BeanDefinition
 		RootBeanDefinition defaultExceptionResolver = new RootBeanDefinition(DefaultHandlerExceptionResolver.class);
 		defaultExceptionResolver.setSource(source);
 		defaultExceptionResolver.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
@@ -327,21 +345,21 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 
 		return null;
 	}
-
+	// 如果指定了 jackson2，添加一个 requestBodyAdvice 属性 JsonViewRequestBodyAdvice 到 BeanDefinition
 	protected void addRequestBodyAdvice(RootBeanDefinition beanDef) {
 		if (jackson2Present) {
 			beanDef.getPropertyValues().add("requestBodyAdvice",
 					new RootBeanDefinition(JsonViewRequestBodyAdvice.class));
 		}
 	}
-
+	// 如果指定了 jackson2，添加一个 responseBodyAdvice 属性 JsonViewResponseBodyAdvice 到 BeanDefinition
 	protected void addResponseBodyAdvice(RootBeanDefinition beanDef) {
 		if (jackson2Present) {
 			beanDef.getPropertyValues().add("responseBodyAdvice",
 					new RootBeanDefinition(JsonViewResponseBodyAdvice.class));
 		}
 	}
-
+	// 获取 FormattingConversionServiceFactoryBean 对应的 BeanDefinition
 	private RuntimeBeanReference getConversionService(Element element, @Nullable Object source, ParserContext context) {
 		RuntimeBeanReference conversionServiceRef;
 		if (element.hasAttribute("conversion-service")) {
@@ -358,7 +376,7 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 		return conversionServiceRef;
 	}
 
-	@Nullable
+	@Nullable	// 构建 OptionalValidatorFactoryBean 对应的 BeanDefinition
 	private RuntimeBeanReference getValidator(Element element, @Nullable Object source, ParserContext context) {
 		if (element.hasAttribute("validator")) {
 			return new RuntimeBeanReference(element.getAttribute("validator"));
@@ -376,7 +394,7 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 			return null;
 		}
 	}
-
+	// 构建一个 ContentNegotiationManagerFactoryBean 对应的 BeanDefinition
 	private RuntimeBeanReference getContentNegotiationManager(
 			Element element, @Nullable Object source, ParserContext context) {
 
@@ -397,7 +415,7 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 		}
 		return beanRef;
 	}
-
+	// 对于 path-matching 子标签的处理
 	private void configurePathMatchingProperties(
 			RootBeanDefinition handlerMappingDef, Element element, ParserContext context) {
 
@@ -557,7 +575,7 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 		Element handlers = DomUtils.getChildElementByTagName(element, "return-value-handlers");
 		return (handlers != null ? extractBeanSubElements(handlers, context) : null);
 	}
-
+	//
 	private ManagedList<?> getMessageConverters(Element element, @Nullable Object source, ParserContext context) {
 		Element convertersElement = DomUtils.getChildElementByTagName(element, "message-converters");
 		ManagedList<Object> messageConverters = new ManagedList<>();

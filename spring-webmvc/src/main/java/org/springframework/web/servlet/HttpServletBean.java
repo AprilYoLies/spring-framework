@@ -143,11 +143,11 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 	 * invoke subclass initialization.
 	 * @throws ServletException if bean properties are invalid (or required
 	 * properties are missing), or if subclass initialization fails.
-	 */
-	@Override
-	public final void init() throws ServletException {
+	 */	// 对于我们的 Servlet 而言，优先调用的是该方法
+	@Override	// 就这里而言，好像就是将 web.xml 中 servlet 对应的属性值设置到当前 servlet 中，初始化 ApplicationContext，会触发监听器事件，导致标签解析中的 bean 被使用到 Dispatcher Servlet 中
+	public final void init() throws ServletException {	// 注意 ContextLoaderListener 只是构建的 root ApplicationContext
 
-		// Set bean properties from init parameters.
+		// Set bean properties from init parameters.	// 获取 ServletConfig 中的 params，添加到 propertyValueList，如果缺少必须参数，报错
 		PropertyValues pvs = new ServletConfigPropertyValues(getServletConfig(), this.requiredProperties);
 		if (!pvs.isEmpty()) {
 			try {
@@ -166,7 +166,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 		}
 
 		// Let subclasses do whatever initialization they like.
-		initServletBean();
+		initServletBean();	// 初始化 ApplicationContext，会触发监听器事件，导致标签解析中的 bean 被使用到 Dispatcher Servlet 中
 	}
 
 	/**
@@ -213,7 +213,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 		 * @param requiredProperties set of property names we need, where
 		 * we can't accept default values
 		 * @throws ServletException if any required properties are missing
-		 */
+		 */	// 获取 ServletConfig 中的 params，添加到 propertyValueList，如果缺少必须参数，报错
 		public ServletConfigPropertyValues(ServletConfig config, Set<String> requiredProperties)
 				throws ServletException {
 
@@ -224,7 +224,7 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 			while (paramNames.hasMoreElements()) {
 				String property = paramNames.nextElement();
 				Object value = config.getInitParameter(property);
-				addPropertyValue(new PropertyValue(property, value));
+				addPropertyValue(new PropertyValue(property, value));	// 将 PropertyValue 添加到 propertyValueList，覆盖式
 				if (missingProps != null) {
 					missingProps.remove(property);
 				}

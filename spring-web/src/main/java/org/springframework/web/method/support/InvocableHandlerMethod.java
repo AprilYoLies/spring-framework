@@ -127,14 +127,14 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	 * @see #getMethodArgumentValues
 	 * @see #doInvoke
 	 */
-	@Nullable
+	@Nullable	// 触发用户 bean 的对应方法
 	public Object invokeForRequest(NativeWebRequest request, @Nullable ModelAndViewContainer mavContainer,
 			Object... providedArgs) throws Exception {
 
 		Object[] args = getMethodArgumentValues(request, mavContainer, providedArgs);
 		if (logger.isTraceEnabled()) {
 			logger.trace("Arguments: " + Arrays.toString(args));
-		}
+		}	// 触发用户 bean 的对应方法
 		return doInvoke(args);
 	}
 
@@ -183,10 +183,10 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	/**
 	 * Invoke the handler method with the given argument values.
 	 */
-	@Nullable
+	@Nullable	// 触发用户 bean 的对应方法
 	protected Object doInvoke(Object... args) throws Exception {
 		ReflectionUtils.makeAccessible(getBridgedMethod());
-		try {
+		try {	// 触发用户 bean 的对应方法
 			return getBridgedMethod().invoke(getBean(), args);
 		}
 		catch (IllegalArgumentException ex) {

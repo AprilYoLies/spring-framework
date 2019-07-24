@@ -143,7 +143,7 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 
 
 	@Override
-	@Nullable
+	@Nullable	// 尝试从缓存中获取视图，如果没有的话，进行创建（判断视图名字，redirect: 和 forward: 单独处理，否则获取设置的 view class 对应的视图实例，完成相关信息的设置，应用生命周期方法返回）并返回。
 	public View resolveViewName(String viewName, Locale locale) throws Exception {
 		if (!isCache()) {
 			return createView(viewName, locale);
@@ -156,7 +156,7 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 					view = this.viewCreationCache.get(cacheKey);
 					if (view == null) {
 						// Ask the subclass to create the View object.
-						view = createView(viewName, locale);
+						view = createView(viewName, locale);	// 判断视图名字，redirect: 和 forward: 单独处理，否则获取设置的 view class 对应的视图实例，完成相关信息的设置，应用生命周期方法返回
 						if (view == null && this.cacheUnresolved) {
 							view = UNRESOLVED_VIEW;
 						}
@@ -245,9 +245,9 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 	 * @throws Exception if the view couldn't be resolved
 	 * @see #loadView
 	 */
-	@Nullable
+	@Nullable	// 获取设置的 view class 对应的视图实例，完成相关信息的设置，应用生命周期方法
 	protected View createView(String viewName, Locale locale) throws Exception {
-		return loadView(viewName, locale);
+		return loadView(viewName, locale);	// 获取设置的 view class 对应的视图实例，完成相关信息的设置，应用生命周期方法
 	}
 
 	/**

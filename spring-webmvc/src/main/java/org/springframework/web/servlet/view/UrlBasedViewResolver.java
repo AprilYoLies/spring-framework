@@ -146,7 +146,7 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 	 * @param viewClass class that is assignable to the required view class
 	 * (by default, AbstractUrlBasedView)
 	 * @see AbstractUrlBasedView
-	 */
+	 */	// 设置视图类型
 	public void setViewClass(@Nullable Class<?> viewClass) {
 		if (viewClass != null && !requiredViewClass().isAssignableFrom(viewClass)) {
 			throw new IllegalArgumentException("Given view class [" + viewClass.getName() +
@@ -437,7 +437,7 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 		return this.order;
 	}
 
-	@Override
+	@Override	// 检查视图类型是否指定
 	protected void initApplicationContext() {
 		super.initApplicationContext();
 		if (getViewClass() == null) {
@@ -463,7 +463,7 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 	 * @see #loadView
 	 * @see #requiredViewClass
 	 */
-	@Override
+	@Override	// 判断视图名字，redirect: 和 forward: 单独处理，否则获取设置的 view class 对应的视图实例，完成相关信息的设置，应用生命周期方法返回
 	protected View createView(String viewName, Locale locale) throws Exception {
 		// If this resolver is not supposed to handle the given view,
 		// return null to pass on to the next resolver in the chain.
@@ -472,7 +472,7 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 		}
 
 		// Check for special "redirect:" prefix.
-		if (viewName.startsWith(REDIRECT_URL_PREFIX)) {
+		if (viewName.startsWith(REDIRECT_URL_PREFIX)) {	// redirect:
 			String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length());
 			RedirectView view = new RedirectView(redirectUrl,
 					isRedirectContextRelative(), isRedirectHttp10Compatible());
@@ -484,12 +484,12 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 		}
 
 		// Check for special "forward:" prefix.
-		if (viewName.startsWith(FORWARD_URL_PREFIX)) {
+		if (viewName.startsWith(FORWARD_URL_PREFIX)) {	// forward:
 			String forwardUrl = viewName.substring(FORWARD_URL_PREFIX.length());
 			InternalResourceView view = new InternalResourceView(forwardUrl);
 			return applyLifecycleMethods(FORWARD_URL_PREFIX, view);
 		}
-
+		// 获取设置的 view class 对应的视图实例，完成相关信息的设置，应用生命周期方法
 		// Else fall back to superclass implementation: calling loadView.
 		return super.createView(viewName, locale);
 	}
@@ -524,10 +524,10 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 	 * @see org.springframework.context.ApplicationContextAware#setApplicationContext
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet
 	 */
-	@Override
+	@Override	// 获取设置的 view class 对应的视图实例，完成相关信息的设置，应用生命周期方法
 	protected View loadView(String viewName, Locale locale) throws Exception {
-		AbstractUrlBasedView view = buildView(viewName);
-		View result = applyLifecycleMethods(viewName, view);
+		AbstractUrlBasedView view = buildView(viewName);	// 获取设置的 view class 对应的视图实例，完成相关信息的设置返回
+		View result = applyLifecycleMethods(viewName, view);	// 应用生命周期的一些方法
 		return (view.checkResource(locale) ? result : null);
 	}
 
@@ -544,13 +544,13 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 	 * @return the View instance
 	 * @throws Exception if the view couldn't be resolved
 	 * @see #loadView(String, java.util.Locale)
-	 */
+	 */	// 获取设置的 view class 对应的视图实例，完成相关信息的设置返回
 	protected AbstractUrlBasedView buildView(String viewName) throws Exception {
 		Class<?> viewClass = getViewClass();
 		Assert.state(viewClass != null, "No view class");
 
 		AbstractUrlBasedView view = (AbstractUrlBasedView) BeanUtils.instantiateClass(viewClass);
-		view.setUrl(getPrefix() + viewName + getSuffix());
+		view.setUrl(getPrefix() + viewName + getSuffix());	// /WEB-INF/jsp/userlist.jsp
 		view.setAttributesMap(getAttributesMap());
 
 		String contentType = getContentType();

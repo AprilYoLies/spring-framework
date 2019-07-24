@@ -131,14 +131,14 @@ public class HandlerExecutionChain {
 	 * @return {@code true} if the execution chain should proceed with the
 	 * next interceptor or the handler itself. Else, DispatcherServlet assumes
 	 * that this interceptor has already dealt with the response itself.
-	 */
+	 */	// 调用拦截器的前置处理器
 	boolean applyPreHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		HandlerInterceptor[] interceptors = getInterceptors();
+		HandlerInterceptor[] interceptors = getInterceptors();	// 获取拦截器
 		if (!ObjectUtils.isEmpty(interceptors)) {
 			for (int i = 0; i < interceptors.length; i++) {
 				HandlerInterceptor interceptor = interceptors[i];
 				if (!interceptor.preHandle(request, response, this.handler)) {
-					triggerAfterCompletion(request, response, null);
+					triggerAfterCompletion(request, response, null);	// 触发完成后事件
 					return false;
 				}
 				this.interceptorIndex = i;

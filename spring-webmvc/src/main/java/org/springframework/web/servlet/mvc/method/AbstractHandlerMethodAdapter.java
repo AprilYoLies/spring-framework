@@ -80,10 +80,10 @@ public abstract class AbstractHandlerMethodAdapter extends WebContentGenerator i
 	 * This implementation expects the handler to be an {@link HandlerMethod}.
 	 */
 	@Override
-	@Nullable
+	@Nullable	// 核心就是获取 ModelAndView，模型来自用户执行逻辑的代码，视图也是
 	public final ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-
+		// 核心就是获取 ModelAndView，模型来自用户执行逻辑的代码，视图也是
 		return handleInternal(request, response, (HandlerMethod) handler);
 	}
 
@@ -97,7 +97,7 @@ public abstract class AbstractHandlerMethodAdapter extends WebContentGenerator i
 	 * or {@code null} if the request has been handled directly
 	 * @throws Exception in case of errors
 	 */
-	@Nullable
+	@Nullable	// 核心就是获取 ModelAndView，模型来自用户执行逻辑的代码，视图也是
 	protected abstract ModelAndView handleInternal(HttpServletRequest request,
 			HttpServletResponse response, HandlerMethod handlerMethod) throws Exception;
 

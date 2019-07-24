@@ -121,7 +121,7 @@ public abstract class ApplicationObjectSupport implements ApplicationContextAwar
 	 * @see #setApplicationContext
 	 */
 	protected void initApplicationContext(ApplicationContext context) throws BeansException {
-		initApplicationContext();
+		initApplicationContext();	// 检查视图类型是否指定
 	}
 
 	/**

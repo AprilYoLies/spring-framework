@@ -766,15 +766,15 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		return true;
 	}
 
-	@Override
+	@Override	//
 	protected ModelAndView handleInternal(HttpServletRequest request,
 			HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {
 
 		ModelAndView mav;
-		checkRequest(request);
+		checkRequest(request);	// 检查请求方法是否匹配，和是否有会话信息
 
 		// Execute invokeHandlerMethod in synchronized block if required.
-		if (this.synchronizeOnSession) {
+		if (this.synchronizeOnSession) {	// 启用会话同步，走这个分支
 			HttpSession session = request.getSession(false);
 			if (session != null) {
 				Object mutex = WebUtils.getSessionMutex(session);
@@ -789,7 +789,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		}
 		else {
 			// No synchronization on session demanded at all...
-			mav = invokeHandlerMethod(request, response, handlerMethod);
+			mav = invokeHandlerMethod(request, response, handlerMethod);	// 核心就是获取 ModelAndView，模型来自用户执行逻辑的代码，视图也是
 		}
 
 		if (!response.containsHeader(HEADER_CACHE_CONTROL)) {
@@ -840,33 +840,33 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 	 * @since 4.2
 	 * @see #createInvocableHandlerMethod(HandlerMethod)
 	 */
-	@Nullable
+	@Nullable	// 核心就是获取 ModelAndView，模型来自用户执行逻辑的代码，视图也是
 	protected ModelAndView invokeHandlerMethod(HttpServletRequest request,
 			HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {
 
 		ServletWebRequest webRequest = new ServletWebRequest(request, response);
-		try {
+		try {	// 数据绑定工厂
 			WebDataBinderFactory binderFactory = getDataBinderFactory(handlerMethod);
-			ModelFactory modelFactory = getModelFactory(handlerMethod, binderFactory);
-
+			ModelFactory modelFactory = getModelFactory(handlerMethod, binderFactory);	// 模型工厂
+			// 根据 HandlerMethod 构建 ServletInvocableHandlerMethod
 			ServletInvocableHandlerMethod invocableMethod = createInvocableHandlerMethod(handlerMethod);
-			if (this.argumentResolvers != null) {
+			if (this.argumentResolvers != null) {	// 参数方法解析器填充到 ServletInvocableHandlerMethod
 				invocableMethod.setHandlerMethodArgumentResolvers(this.argumentResolvers);
 			}
-			if (this.returnValueHandlers != null) {
+			if (this.returnValueHandlers != null) {	// 返回值处理器添加到 ServletInvocableHandlerMethod
 				invocableMethod.setHandlerMethodReturnValueHandlers(this.returnValueHandlers);
 			}
-			invocableMethod.setDataBinderFactory(binderFactory);
-			invocableMethod.setParameterNameDiscoverer(this.parameterNameDiscoverer);
+			invocableMethod.setDataBinderFactory(binderFactory);	// 设置数据绑定工厂
+			invocableMethod.setParameterNameDiscoverer(this.parameterNameDiscoverer);	// 参数名发现器
 
-			ModelAndViewContainer mavContainer = new ModelAndViewContainer();
+			ModelAndViewContainer mavContainer = new ModelAndViewContainer();	// 模型视图容器
 			mavContainer.addAllAttributes(RequestContextUtils.getInputFlashMap(request));
 			modelFactory.initModel(webRequest, mavContainer, invocableMethod);
 			mavContainer.setIgnoreDefaultModelOnRedirect(this.ignoreDefaultModelOnRedirect);
-
+			// 异步 web 请求
 			AsyncWebRequest asyncWebRequest = WebAsyncUtils.createAsyncWebRequest(request, response);
 			asyncWebRequest.setTimeout(this.asyncRequestTimeout);
-
+			// web 异步管理器
 			WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
 			asyncManager.setTaskExecutor(this.taskExecutor);
 			asyncManager.setAsyncWebRequest(asyncWebRequest);
@@ -883,12 +883,12 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 				});
 				invocableMethod = invocableMethod.wrapConcurrentResult(result);
 			}
-
+			// 触发用户 bean 的对应方法，完成对于返回结果的处理
 			invocableMethod.invokeAndHandle(webRequest, mavContainer);
 			if (asyncManager.isConcurrentHandlingStarted()) {
 				return null;
 			}
-
+			// 返回模型和视图
 			return getModelAndView(mavContainer, modelFactory, webRequest);
 		}
 		finally {
@@ -997,8 +997,8 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 		if (mavContainer.isRequestHandled()) {
 			return null;
 		}
-		ModelMap model = mavContainer.getModel();
-		ModelAndView mav = new ModelAndView(mavContainer.getViewName(), model, mavContainer.getStatus());
+		ModelMap model = mavContainer.getModel();	// 模型 map，里边存放的是，数据 key 和数据 value
+		ModelAndView mav = new ModelAndView(mavContainer.getViewName(), model, mavContainer.getStatus());	// ModelAndView 里边包含了模型和视图信息
 		if (!mavContainer.isViewReference()) {
 			mav.setView((View) mavContainer.getView());
 		}

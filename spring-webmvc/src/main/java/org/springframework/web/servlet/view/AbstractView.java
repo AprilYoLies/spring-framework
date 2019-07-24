@@ -301,7 +301,7 @@ public abstract class AbstractView extends WebApplicationObjectSupport implement
 	 * Delegates to renderMergedOutputModel for the actual rendering.
 	 * @see #renderMergedOutputModel
 	 */
-	@Override
+	@Override	// 获取全部的模型，将模型以参数的形式添加到 request 中，拿到跳转的路径，获取 RequestDispatcher，进行请求转发
 	public void render(@Nullable Map<String, ?> model, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 
@@ -310,16 +310,16 @@ public abstract class AbstractView extends WebApplicationObjectSupport implement
 					", model " + (model != null ? model : Collections.emptyMap()) +
 					(this.staticAttributes.isEmpty() ? "" : ", static attributes " + this.staticAttributes));
 		}
-
+		// 将模型和 staticAttributes 及 requestContextAttribute 合并在同一个集合返回。
 		Map<String, Object> mergedModel = createMergedOutputModel(model, request, response);
 		prepareResponse(request, response);
-		renderMergedOutputModel(mergedModel, getRequestToExpose(request), response);
+		renderMergedOutputModel(mergedModel, getRequestToExpose(request), response);	// 将模型以参数的形式添加到 request 中，拿到跳转的路径，获取 RequestDispatcher，进行请求转发
 	}
 
 	/**
 	 * Creates a combined output Map (never {@code null}) that includes dynamic values and static attributes.
 	 * Dynamic values take precedence over static attributes.
-	 */
+	 */	// 将模型和 staticAttributes 及 requestContextAttribute 合并在同一个集合返回。
 	protected Map<String, Object> createMergedOutputModel(@Nullable Map<String, ?> model,
 			HttpServletRequest request, HttpServletResponse response) {
 
@@ -435,7 +435,7 @@ public abstract class AbstractView extends WebApplicationObjectSupport implement
 	 * This method is suitable for all resources reachable by {@link javax.servlet.RequestDispatcher}.
 	 * @param model a Map of model objects to expose
 	 * @param request current HTTP request
-	 */
+	 */	// 将模型全部添加到 request 属性中
 	protected void exposeModelAsRequestAttributes(Map<String, Object> model,
 			HttpServletRequest request) throws Exception {
 

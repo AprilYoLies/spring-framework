@@ -98,10 +98,10 @@ public class ServletInvocableHandlerMethod extends InvocableHandlerMethod {
 	 * @param webRequest the current request
 	 * @param mavContainer the ModelAndViewContainer for this request
 	 * @param providedArgs "given" arguments matched by type (not resolved)
-	 */
+	 */	// 触发用户 bean 的对应方法，完成对于返回结果的处理
 	public void invokeAndHandle(ServletWebRequest webRequest, ModelAndViewContainer mavContainer,
 			Object... providedArgs) throws Exception {
-
+		// 触发用户 bean 的对应方法
 		Object returnValue = invokeForRequest(webRequest, mavContainer, providedArgs);
 		setResponseStatus(webRequest);
 

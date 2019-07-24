@@ -133,12 +133,12 @@ public class InternalResourceView extends AbstractUrlBasedView {
 	 * Render the internal resource given the specified model.
 	 * This includes setting the model as request attributes.
 	 */
-	@Override
+	@Override	// 将模型以参数的形式添加到 request 中，拿到跳转的路径，获取 RequestDispatcher，进行请求转发
 	protected void renderMergedOutputModel(
 			Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		// Expose the model object as request attributes.
-		exposeModelAsRequestAttributes(model, request);
+		exposeModelAsRequestAttributes(model, request);	// 将模型全部添加到 request 属性中
 
 		// Expose helpers as request attributes, if any.
 		exposeHelpers(request);
@@ -167,7 +167,7 @@ public class InternalResourceView extends AbstractUrlBasedView {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Forwarding to [" + getUrl() + "]");
 			}
-			rd.forward(request, response);
+			rd.forward(request, response);	// 这里就是进行请求转发了，也就是跳转到我们指定的那个视图
 		}
 	}
 

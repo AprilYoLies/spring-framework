@@ -442,9 +442,9 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 		}
 	}
 
-	@Override
+	@Override	// 根据 lookupPath 获取 matches 集合，对其按照匹配度排序，拿到最匹配的项，获取其中的 HandlerMethod
 	protected HandlerMethod getHandlerInternal(HttpServletRequest request) throws Exception {
-		try {
+		try {	// 根据 lookupPath 获取 matches 集合，对其按照匹配度排序，拿到最匹配的项，获取其中的 HandlerMethod
 			return super.getHandlerInternal(request);
 		}
 		finally {

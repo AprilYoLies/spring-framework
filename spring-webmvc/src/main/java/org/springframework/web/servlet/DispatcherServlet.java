@@ -497,7 +497,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	/**
 	 * Initialize the strategy objects that this servlet uses.
 	 * <p>May be overridden in subclasses in order to initialize further strategy objects.
-	 */
+	 */	// 完成一些 bean 的填充，主要就是在我们的标签解析中得到的那些 bean，还有视图解析器
 	protected void initStrategies(ApplicationContext context) {
 		initMultipartResolver(context);
 		initLocaleResolver(context);
@@ -922,12 +922,12 @@ public class DispatcherServlet extends FrameworkServlet {
 				}
 			}
 		}
-
+		// 下边这些类似的代码就是将标签解析出来的 bean 以属性的方式添加到 request 中
 		// Make framework objects available to handlers and view objects.
-		request.setAttribute(WEB_APPLICATION_CONTEXT_ATTRIBUTE, getWebApplicationContext());
-		request.setAttribute(LOCALE_RESOLVER_ATTRIBUTE, this.localeResolver);
-		request.setAttribute(THEME_RESOLVER_ATTRIBUTE, this.themeResolver);
-		request.setAttribute(THEME_SOURCE_ATTRIBUTE, getThemeSource());
+		request.setAttribute(WEB_APPLICATION_CONTEXT_ATTRIBUTE, getWebApplicationContext());	// org.springframework.web.servlet.DispatcherServlet.CONTEXT
+		request.setAttribute(LOCALE_RESOLVER_ATTRIBUTE, this.localeResolver);	// org.springframework.web.servlet.DispatcherServlet.LOCALE_RESOLVER
+		request.setAttribute(THEME_RESOLVER_ATTRIBUTE, this.themeResolver);	// org.springframework.web.servlet.DispatcherServlet.THEME_RESOLVER
+		request.setAttribute(THEME_SOURCE_ATTRIBUTE, getThemeSource());	// org.springframework.web.servlet.DispatcherServlet.THEME_SOURCE
 
 		if (this.flashMapManager != null) {
 			FlashMap inputFlashMap = this.flashMapManager.retrieveAndUpdate(request, response);
@@ -943,7 +943,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 		finally {
 			if (!WebAsyncUtils.getAsyncManager(request).isConcurrentHandlingStarted()) {
-				// Restore the original attribute snapshot, in case of an include.
+				// Restore the original attribute snapshot, icase of an include.
 				if (attributesSnapshot != null) {
 					restoreAttributesAfterInclude(request, attributesSnapshot);
 				}
@@ -1000,7 +1000,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		HttpServletRequest processedRequest = request;
 		HandlerExecutionChain mappedHandler = null;
 		boolean multipartRequestParsed = false;
-
+		// 获取 request 中的 WebAsyncManager
 		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
 
 		try {
@@ -1008,9 +1008,9 @@ public class DispatcherServlet extends FrameworkServlet {
 			Exception dispatchException = null;
 
 			try {
-				processedRequest = checkMultipart(request);
-				multipartRequestParsed = (processedRequest != request);
-
+				processedRequest = checkMultipart(request);	// 如果指定了 Multipart 处理器，进行处理
+				multipartRequestParsed = (processedRequest != request);	// 是否被 multipart 处理的标志
+				// 根据 lookupPath 获取 matches 集合，对其按照匹配度排序，拿到最匹配的项，获取其中的 HandlerMethod，再构建 execution chain 返回
 				// Determine handler for the current request.
 				mappedHandler = getHandler(processedRequest);
 				if (mappedHandler == null) {
@@ -1024,17 +1024,17 @@ public class DispatcherServlet extends FrameworkServlet {
 				// Process last-modified header, if supported by the handler.
 				String method = request.getMethod();
 				boolean isGet = "GET".equals(method);
-				if (isGet || "HEAD".equals(method)) {
+				if (isGet || "HEAD".equals(method)) {	// Get 或者 HEAD 方法
 					long lastModified = ha.getLastModified(request, mappedHandler.getHandler());
 					if (new ServletWebRequest(request, response).checkNotModified(lastModified) && isGet) {
 						return;
 					}
 				}
-
+				// 调用拦截器的前置处理器
 				if (!mappedHandler.applyPreHandle(processedRequest, response)) {
 					return;
 				}
-
+				// 核心就是获取 ModelAndView，模型来自用户执行逻辑的代码，视图也是
 				// Actually invoke the handler.
 				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 
@@ -1043,7 +1043,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				}
 
 				applyDefaultViewName(processedRequest, mv);
-				mappedHandler.applyPostHandle(processedRequest, response, mv);
+				mappedHandler.applyPostHandle(processedRequest, response, mv);	// 应用后置处理器
 			}
 			catch (Exception ex) {
 				dispatchException = ex;
@@ -1052,7 +1052,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				// As of 4.3, we're processing Errors thrown from handler methods as well,
 				// making them available for @ExceptionHandler methods and other scenarios.
 				dispatchException = new NestedServletException("Handler dispatch failed", err);
-			}
+			}	// 处理分发结果
 			processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException);
 		}
 		catch (Exception ex) {
@@ -1114,7 +1114,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 		// Did the handler return a view to render?
 		if (mv != null && !mv.wasCleared()) {
-			render(mv, request, response);
+			render(mv, request, response);	// 这里应该是进行渲染吧，最终就是将结果发送给了客户端
 			if (errorView) {
 				WebUtils.clearErrorRequestAttributes(request);
 			}
@@ -1225,12 +1225,12 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * @param request current HTTP request
 	 * @return the HandlerExecutionChain, or {@code null} if no handler could be found
 	 */
-	@Nullable
+	@Nullable	// 根据 lookupPath 获取 matches 集合，对其按照匹配度排序，拿到最匹配的项，获取其中的 HandlerMethod，再构建 execution chain 返回
 	protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
 		if (this.handlerMappings != null) {
 			for (HandlerMapping mapping : this.handlerMappings) {
 				HandlerExecutionChain handler = mapping.getHandler(request);
-				if (handler != null) {
+				if (handler != null) {	// 根据 lookupPath 获取 matches 集合，对其按照匹配度排序，拿到最匹配的项，获取其中的 HandlerMethod，再构建 execution chain 返回
 					return handler;
 				}
 			}
@@ -1334,19 +1334,19 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * @param response current HTTP servlet response
 	 * @throws ServletException if view is missing or cannot be resolved
 	 * @throws Exception if there's a problem rendering the view
-	 */
-	protected void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response) throws Exception {
+	 */	// 尝试根据环境中的视图解析器来创建视图，优先从缓存中获取视图，如果没有的话，进行创建（判断视图名字，redirect: 和 forward: 单独处理，否则获取设置的 view class 对应的视图实例，完成相关信息的设置，应用生命周期方法返回）并返回。
+	protected void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response) throws Exception {	// 获取全部的模型，将模型以参数的形式添加到 request 中，拿到跳转的路径，获取 RequestDispatcher，进行请求转发
 		// Determine locale for request and apply it to the response.
-		Locale locale =
+		Locale locale =	// 地区信息
 				(this.localeResolver != null ? this.localeResolver.resolveLocale(request) : request.getLocale());
 		response.setLocale(locale);
 
 		View view;
-		String viewName = mv.getViewName();
+		String viewName = mv.getViewName();	// 视图名字
 		if (viewName != null) {
 			// We need to resolve the view name.
 			view = resolveViewName(viewName, mv.getModelInternal(), locale, request);
-			if (view == null) {
+			if (view == null) {	// 尝试根据环境中的视图解析器来创建视图，优先从缓存中获取视图，如果没有的话，进行创建（判断视图名字，redirect: 和 forward: 单独处理，否则获取设置的 view class 对应的视图实例，完成相关信息的设置，应用生命周期方法返回）并返回。
 				throw new ServletException("Could not resolve view with name '" + mv.getViewName() +
 						"' in servlet with name '" + getServletName() + "'");
 			}
@@ -1367,7 +1367,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		try {
 			if (mv.getStatus() != null) {
 				response.setStatus(mv.getStatus().value());
-			}
+			}	// 获取全部的模型，将模型以参数的形式添加到 request 中，拿到跳转的路径，获取 RequestDispatcher，进行请求转发
 			view.render(mv.getModelInternal(), request, response);
 		}
 		catch (Exception ex) {
@@ -1403,14 +1403,14 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * (typically in case of problems creating an actual View object)
 	 * @see ViewResolver#resolveViewName
 	 */
-	@Nullable
+	@Nullable	// 尝试根据环境中的视图解析器来创建视图，优先从缓存中获取视图，如果没有的话，进行创建（判断视图名字，redirect: 和 forward: 单独处理，否则获取设置的 view class 对应的视图实例，完成相关信息的设置，应用生命周期方法返回）并返回。
 	protected View resolveViewName(String viewName, @Nullable Map<String, Object> model,
 			Locale locale, HttpServletRequest request) throws Exception {
 
 		if (this.viewResolvers != null) {
 			for (ViewResolver viewResolver : this.viewResolvers) {
 				View view = viewResolver.resolveViewName(viewName, locale);
-				if (view != null) {
+				if (view != null) {	// 尝试从缓存中获取视图，如果没有的话，进行创建（判断视图名字，redirect: 和 forward: 单独处理，否则获取设置的 view class 对应的视图实例，完成相关信息的设置，应用生命周期方法返回）并返回。
 					return view;
 				}
 			}
