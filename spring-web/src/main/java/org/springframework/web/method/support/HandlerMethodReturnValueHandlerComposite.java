@@ -71,18 +71,18 @@ public class HandlerMethodReturnValueHandlerComposite implements HandlerMethodRe
 	 * Iterate over registered {@link HandlerMethodReturnValueHandler HandlerMethodReturnValueHandlers} and invoke the one that supports it.
 	 * @throws IllegalStateException if no suitable {@link HandlerMethodReturnValueHandler} is found.
 	 */
-	@Override
+	@Override	// 根据 MethodParameter 从 returnValueHandlers 中选择合适的 handler，使用获得的 handler 处理响应结果
 	public void handleReturnValue(@Nullable Object returnValue, MethodParameter returnType,
 			ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
-
+		// 根据 MethodParameter 从 returnValueHandlers 中选择合适的 handler
 		HandlerMethodReturnValueHandler handler = selectHandler(returnValue, returnType);
 		if (handler == null) {
 			throw new IllegalArgumentException("Unknown return value type: " + returnType.getParameterType().getName());
-		}
+		}	// 使用获得的 handler 处理响应结果
 		handler.handleReturnValue(returnValue, returnType, mavContainer, webRequest);
 	}
 
-	@Nullable
+	@Nullable	// 根据 MethodParameter 从 returnValueHandlers 中选择合适的 handler
 	private HandlerMethodReturnValueHandler selectHandler(@Nullable Object value, MethodParameter returnType) {
 		boolean isAsyncValue = isAsyncReturnValue(value, returnType);
 		for (HandlerMethodReturnValueHandler handler : this.returnValueHandlers) {

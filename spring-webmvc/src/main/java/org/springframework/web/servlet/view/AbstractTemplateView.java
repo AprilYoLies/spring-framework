@@ -115,7 +115,7 @@ public abstract class AbstractTemplateView extends AbstractUrlBasedView {
 	protected final void renderMergedOutputModel(
 			Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		if (this.exposeRequestAttributes) {
+		if (this.exposeRequestAttributes) {	// 将请求中的属性进行暴露
 			Map<String, Object> exposed = null;
 			for (Enumeration<String> en = request.getAttributeNames(); en.hasMoreElements();) {
 				String attribute = en.nextElement();
@@ -135,7 +135,7 @@ public abstract class AbstractTemplateView extends AbstractUrlBasedView {
 			}
 		}
 
-		if (this.exposeSessionAttributes) {
+		if (this.exposeSessionAttributes) {	// 暴露会话中的属性
 			HttpSession session = request.getSession(false);
 			if (session != null) {
 				Map<String, Object> exposed = null;

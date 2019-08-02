@@ -74,7 +74,7 @@ public class ViewNameMethodReturnValueHandler implements HandlerMethodReturnValu
 		return (void.class == paramType || CharSequence.class.isAssignableFrom(paramType));
 	}
 
-	@Override
+	@Override	// 将视图的名字设置到 ModelAndViewContainer
 	public void handleReturnValue(@Nullable Object returnValue, MethodParameter returnType,
 			ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
 

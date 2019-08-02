@@ -201,10 +201,10 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 	 * DefaultHandlerExceptionResolver
 	 * MappedInterceptor
 	 * ExceptionHandlerExceptionResolver
-	 * registerBeanNameUrlHandlerMapping(parserContext, source);
-	 * registerHttpRequestHandlerAdapter(parserContext, source);	（用来验证 handler 是否可用）
-	 * registerSimpleControllerHandlerAdapter(parserContext, source);	（用来验证 handler 是否可用）
-	 * registerHandlerMappingIntrospector(parserContext, source);
+	 * BeanNameUrlHandlerMapping(parserContext, source);
+	 * RequestHandlerAdapter(parserContext, source);	（用来验证 handler 是否可用）
+	 * SimpleControllerHandlerAdapter(parserContext, source);	（用来验证 handler 是否可用）
+	 * HandlerMappingIntrospector(parserContext, source);
 	 */
 
 	// 构建了一系列的 bean

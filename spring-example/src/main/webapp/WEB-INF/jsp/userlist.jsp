@@ -6,7 +6,7 @@
 </head>
 <body>
     <c:forEach items="${users}" var="user">
-        <c:out value="${user.username}"/><br/>
+        <c:out value="${user.name}"/><br/>
     </c:forEach>
 </body>
 </html>

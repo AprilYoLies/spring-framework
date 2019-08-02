@@ -646,7 +646,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * @param parent the parent ApplicationContext to use, or {@code null} if none
 	 * @return the WebApplicationContext for this servlet
 	 * @see org.springframework.web.context.support.XmlWebApplicationContext
-	 */
+	 */	// 获取 ContextClass，据此创建了一个 ApplicationContext，它持有我们 spring 配置文件的位置，同时将参数的 ApplicationContext 作为父 ApplicationContext，刷新配置和启动
 	protected WebApplicationContext createWebApplicationContext(@Nullable ApplicationContext parent) {
 		Class<?> contextClass = getContextClass();
 		if (!ConfigurableWebApplicationContext.class.isAssignableFrom(contextClass)) {
@@ -662,8 +662,8 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		wac.setParent(parent);
 		String configLocation = getContextConfigLocation();
 		if (configLocation != null) {
-			wac.setConfigLocation(configLocation);
-		}
+			wac.setConfigLocation(configLocation);	// 持有 spring 配置文件
+		}	// 刷新配置和启动
 		configureAndRefreshWebApplicationContext(wac);
 
 		return wac;

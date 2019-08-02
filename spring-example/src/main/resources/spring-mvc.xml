@@ -15,16 +15,6 @@
 
     <!-- 注解驱动:替我们显示的配置了最新版的注解的处理器映射器和处理器适配器 -->
     <mvc:annotation-driven/>
-    <!-- 配置视图 -->
-    <!--<bean id="simpleUrlHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">-->
-    <!--<property name="mappings">-->
-    <!--<props>-->
-    <!--<prop key="userlist.html">userController</prop>-->
-    <!--</props>-->
-    <!--</property>-->
-    <!--</bean>-->
-
-    <!--<bean id="userController" class="book.mvc.UserController"/>-->
 
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/jsp/"/>
