@@ -4,6 +4,7 @@
 .DS_Store
 .settings
 .springBeans
+lib
 bin
 build.sh
 integration-repo
