@@ -7,5 +7,7 @@
 
 	<aop:aspectj-autoproxy/>
 
-	<bean id="lifeCycleBean" class="top.aprilyolies.example.ioc.LifeCycleBean"/>
+<!--	<bean id="lifeCycleBean" class="top.aprilyolies.example.ioc.LifeCycleBean"/>-->
+
+	<bean id="lifeCycleBeanFactoryBean" class="top.aprilyolies.example.ioc.LifeCycleBeanFactoryBean"/>
 </beans>
